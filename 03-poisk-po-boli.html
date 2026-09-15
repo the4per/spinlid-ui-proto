@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Поиск по боли — SpinLid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4EBDA; --cell:#FFFBF2; --cell-tint:#FFF1DE;
+  --ink:#1C1917; --ink-2:#57534E; --ink-3:#8A8177;
+  --line:#E7DCC8; --line-2:#D8CBB2;
+  --peach:#FAD4C0; --peach-2:#F0B590;
+  --accent:#C2410C; --accent-deep:#9A3412;
+  --good:#16A34A; --warn:#D97706; --bad:#DC2626;
+  --r-cell:20px; --r-ctl:12px;
+  --sh:0 1px 2px rgba(74,52,18,.06), 0 10px 28px -18px rgba(74,52,18,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:var(--peach);color:var(--ink)}
+body{font-family:'Golos Text','Segoe UI',sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 420px at 12% -6%, rgba(250,212,192,.45), transparent 60%)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.top{max-width:1180px;margin:0 auto;padding:22px 28px 0;display:flex;align-items:center;gap:28px}
+.brand{display:flex;align-items:baseline;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.02em}
+.brand em{font-style:normal;color:var(--accent)}
+.top nav{display:flex;gap:4px;font-size:13.5px;font-weight:500;color:var(--ink-2)}
+.top nav a{padding:7px 12px;border-radius:8px}
+.top nav a:hover{color:var(--ink);background:rgba(255,255,255,.65)}
+.top nav a[aria-current]{color:var(--ink);font-weight:700;box-shadow:inset 0 -2px 0 var(--ink)}
+.top .acct{margin-left:auto;font-size:13px;color:var(--ink-3)}
+.top .acct b{color:var(--ink-2);font-weight:600}
+.hair{max-width:1180px;margin:14px auto 0;border:none;border-top:1px solid var(--line-2)}
+main{max-width:1180px;margin:0 auto;padding:40px 28px 100px}
+
+/* заголовок */
+.lede{max-width:760px}
+.kicker{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.kicker::after{content:'';flex:1;max-width:64px;border-top:1px solid var(--peach-2)}
+h1{font-size:clamp(30px,4vw,44px);line-height:1.08;font-weight:800;letter-spacing:-.028em}
+h1 .dim{display:block;color:var(--ink-3);font-weight:700}
+.lede p{margin-top:18px;font-size:16px;color:var(--ink-2);max-width:58ch}
+.lede p b{color:var(--ink);font-weight:600}
+
+/* бенто */
+.bento{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:36px;align-items:stretch}
+@media(max-width:900px){.bento{grid-template-columns:1fr}}
+.cell{background:var(--cell);border:1px solid var(--line);border-radius:var(--r-cell);padding:24px;box-shadow:var(--sh)}
+.lab{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+.lab-sub{font-size:13px;color:var(--ink-3);margin-bottom:18px}
+
+/* —— рейтинг болей с барами —— */
+.pains-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px}
+.pains-head .lab{margin:0}
+.pains-head .scope{font-size:12px;color:var(--ink-3)}
+.pains-head .scope .mono{font-weight:600;color:var(--ink-2)}
+.pbar-row{display:grid;grid-template-columns:1fr 64px;gap:14px;align-items:center;padding:9px 10px;border-radius:12px;transition:background .12s;width:100%;text-align:left;min-height:44px}
+.pbar-row:hover{background:#FFFDF8}
+.pbar-row.on{background:var(--cell-tint);box-shadow:inset 0 0 0 1px var(--peach-2)}
+.pbar-top{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.pbar-top .nm{font-size:14.5px;font-weight:600}
+.pbar-row.on .pbar-top .nm{font-weight:700}
+.pbar-top .mk{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center;color:transparent;flex-shrink:0;transition:.12s}
+.pbar-row.on .mk{background:var(--ink);border-color:var(--ink);color:var(--peach)}
+.pbar-top .ok{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--accent-deep);background:var(--cell-tint);border:1px solid var(--peach-2);border-radius:5px;padding:1px 6px;display:none}
+.pbar-row.on .pbar-top .ok{display:inline-block}
+.track{height:8px;border-radius:99px;background:#F1E6D2;overflow:hidden}
+.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#EFCFB4,var(--peach-2));transition:width .5s cubic-bezier(.2,.7,.3,1)}
+.pbar-row.on .fill{background:linear-gradient(90deg,var(--peach-2),var(--accent))}
+.pbar-row .cnt{text-align:right}
+.pbar-row .cnt b{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;display:block;line-height:1.1}
+.pbar-row .cnt small{font-size:11px;color:var(--ink-3)}
+.pains-more{width:100%;margin-top:10px;border-top:1px solid var(--line);padding-top:12px;font-size:13px;font-weight:700;color:var(--accent-deep);text-align:left;min-height:40px}
+.pains-more:hover{color:var(--accent)}
+.more-list{display:none}
+.more-list.show{display:block}
+
+/* —— свой вариант боли —— */
+.own{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
+.own-line{display:flex;gap:9px}
+.own-line .si{position:relative;flex:1}
+.own-line .si svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink-3)}
+.own-line input{width:100%;background:#FFFDF8;border:1px solid var(--line-2);border-radius:var(--r-ctl);padding:11px 13px 11px 38px;font-size:14px}
+.own-line input:focus{outline:none;border-color:var(--peach-2);box-shadow:0 0 0 3px rgba(240,181,144,.35)}
+.own-found{display:none;margin-top:10px;font-size:13px;color:var(--ink-2);align-items:center;gap:8px}
+.own-found.show{display:flex}
+.own-found b{color:var(--ink)}
+
+/* —— правая колонка —— */
+.where{display:flex;flex-direction:column;gap:18px}
+.w-field label{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+.w-field input{width:100%;background:#FFFDF8;border:1px solid var(--line-2);border-radius:var(--r-ctl);padding:11px 13px;font-size:14.5px;font-weight:500}
+.w-field input:focus{outline:none;border-color:var(--peach-2);box-shadow:0 0 0 3px rgba(240,181,144,.35)}
+.w-note{font-size:12px;color:var(--ink-3);margin-top:6px}
+.src-seg{display:flex;flex-wrap:wrap;gap:6px}
+.src-seg button{font-size:12.5px;font-weight:600;color:var(--ink-2);border:1px solid var(--line-2);border-radius:99px;padding:6px 13px;background:var(--cell);transition:.12s;min-height:34px}
+.src-seg button.on{background:var(--peach);border-color:var(--peach-2);color:#3B1E0C;font-weight:700}
+.w-cta{margin-top:auto;padding-top:20px;border-top:1px solid var(--line)}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;font-weight:700;font-size:15px;
+  padding:13px 22px;border-radius:var(--r-ctl);min-height:46px;
+  background:linear-gradient(180deg,#FBD9C6,#F6C29E);color:#3B1E0C;border:1px solid #EDBE9B;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 8px 18px -10px rgba(194,65,12,.45);transition:transform .12s}
+.btn-primary:hover{transform:translateY(-1px)}
+.w-cta .m{font-size:12.5px;color:var(--ink-3);margin-top:9px;text-align:center}
+
+/* —— результаты —— */
+.res-head{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-top:56px;padding-top:28px;border-top:1px solid var(--line-2)}
+.res-n{font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:700;line-height:1;letter-spacing:-.02em}
+.res-t{font-size:15px;color:var(--ink-2)}
+.res-t b{color:var(--ink);font-weight:700}
+.res-sub{font-size:13px;color:var(--ink-3);margin-top:5px}
+.res-sub .mono{font-weight:600;color:var(--ink-2)}
+.res-actions{margin-left:auto;display:flex;gap:9px;align-items:center}
+.res-actions label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink-2);min-height:40px}
+.res-actions input{width:16px;height:16px;accent-color:#9A3412}
+.abtn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;border:1px solid var(--line-2);border-radius:10px;padding:9px 14px;background:var(--cell);color:var(--ink-2);min-height:40px;transition:.12s}
+.abtn:hover{color:var(--ink);border-color:#C9B993}
+
+.list{border-top:1px solid var(--line-2);margin-top:18px}
+.row{display:grid;grid-template-columns:1fr auto;gap:18px;padding:20px 6px 20px 2px;border-bottom:1px solid var(--line);transition:background .12s}
+.row:hover{background:rgba(255,251,242,.9)}
+.r-line1{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.r-name{font-size:16.5px;font-weight:700;letter-spacing:-.01em}
+.r-sub{font-size:12.5px;color:var(--ink-3)}
+.pains{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.pain{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent-deep);background:var(--cell-tint);border:1px solid #F2D6BF;border-radius:99px;padding:3px 11px}
+.pain .n{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3);font-weight:500}
+.r-quote{margin-top:10px;font-size:13.5px;color:var(--ink-2);max-width:64ch}
+.r-quote::before{content:'— '}
+.r-meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:11px;font-size:12px;color:var(--ink-2);align-items:center}
+.r-meta .sep{color:var(--line-2)}
+.r-meta b{font-weight:600;color:var(--ink)}
+.flag{display:inline-flex;align-items:center;gap:5px;font-weight:600}
+.flag.bad{color:var(--bad)} .flag.mut{color:var(--ink-3)}
+.flag .fdot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.r-side{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.temp{text-align:right}
+.temp .tv{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;line-height:1}
+.temp.t-hot .tv{color:var(--bad)} .temp.t-warm .tv{color:var(--warn)}
+.temp .tl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-top:3px}
+.r-acts{display:flex;gap:6px}
+.ibtn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink-2);border:1px solid var(--line-2);border-radius:8px;padding:7px 12px;background:var(--cell);transition:.12s;min-height:36px}
+.ibtn:hover{color:var(--ink);border-color:#C9B993}
+.ibtn.solid{background:var(--ink);color:var(--peach);border-color:var(--ink)}
+.ibtn.solid:hover{background:#3B3126}
+.r-contact{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;white-space:nowrap}
+.r-web{font-size:12px;color:var(--accent);font-weight:600}
+.r-web.none{color:var(--ink-3)}
+
+.pager{display:flex;align-items:center;justify-content:center;gap:18px;padding:16px 0 0;font-size:13px;color:var(--ink-2)}
+.pager .pg{border:1px solid var(--line-2);border-radius:10px;padding:8px 16px;font-weight:600;color:var(--ink-2);background:var(--cell);min-height:40px}
+.pager .pg:disabled{opacity:.4;cursor:default}
+.pager .mono{font-weight:700;color:var(--ink)}
+
+.foot{max-width:1180px;margin:44px auto 0;padding:0 28px 40px;display:flex;gap:22px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3)}
+.foot a{color:var(--ink-2);font-weight:600}
+.foot b{color:var(--ink-2)}
+.ic{width:15px;height:15px;flex-shrink:0}
+@media(max-width:760px){.row{grid-template-columns:1fr}.r-side{flex-direction:row;align-items:center;flex-wrap:wrap}.res-actions{margin-left:0}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="01-poisk-lidov.html"><span>Spin<em>lid</em></span></a>
+  <nav aria-label="Разделы">
+    <a href="01-poisk-lidov.html">Поиск</a>
+    <a href="#" aria-current="page">По боли</a>
+    <a href="#">История</a>
+    <a href="#">Списки</a>
+    <a href="#">КП</a>
+  </nav>
+  <div class="acct"><b>Прототип 3/3</b><span> · по боли · Bento</span></div>
+</header>
+<hr class="hair">
+
+<main>
+  <section class="lede">
+    <p class="kicker">Поиск по боли</p>
+    <h1>Кто уже жалуется —<span class="dim">найдите по отзывам их клиентов</span></h1>
+    <p>Выберите частую жалобу — покажем компании, где она встречается в реальных отзывах, с <b>цитатой и контактом</b>. Это самый сильный повод для первого письма.</p>
+  </section>
+
+  <section class="bento">
+    <!-- рейтинг болей -->
+    <div class="cell">
+      <div class="pains-head">
+        <div>
+          <p class="lab">На что жалуются</p>
+        </div>
+        <span class="scope"><span class="mono">Стоматология · Москва</span> · 628 негативных отзывов</span>
+      </div>
+      <p class="lab-sub">Размер полосы — сколько раз жалобу упомянули в отзывах. Можно выбрать несколько.</p>
+
+      <div id="pains">
+        <button class="pbar-row on" type="button" onclick="pb(this)" aria-pressed="true">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Не могут дозвониться</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:100%"></span></span>
+          </span>
+          <span class="cnt"><b>142</b><small>отзыва</small></span>
+        </button>
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Долго ждать приёма</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:69%"></span></span>
+          </span>
+          <span class="cnt"><b>98</b><small>отзывов</small></span>
+        </button>
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Непонятные цены</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:54%"></span></span>
+          </span>
+          <span class="cnt"><b>76</b><small>отзывов</small></span>
+        </button>
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Грубость персонала</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:47%"></span></span>
+          </span>
+          <span class="cnt"><b>67</b><small>отзывов</small></span>
+        </button>
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Потерянная заявка</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:38%"></span></span>
+          </span>
+          <span class="cnt"><b>54</b><small>отзыва</small></span>
+        </button>
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Очередь, несмотря на запись</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:32%"></span></span>
+          </span>
+          <span class="cnt"><b>45</b><small>отзывов</small></span>
+        </button>
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Сорванные сроки</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:27%"></span></span>
+          </span>
+          <span class="cnt"><b>39</b><small>отзывов</small></span>
+        </button>
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Грязь и неубрано</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:20%"></span></span>
+          </span>
+          <span class="cnt"><b>28</b><small>отзывов</small></span>
+        </button>
+      </div>
+
+      <button class="pains-more" id="moreBtn" type="button" onclick="toggleMore()">Показать ещё 14 болей этой ниши</button>
+      <div class="more-list" id="moreList">
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Навязывают доп. услуги</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:15%"></span></span>
+          </span>
+          <span class="cnt"><b>21</b><small>отзыв</small></span>
+        </button>
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Нет парковки</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:13%"></span></span>
+          </span>
+          <span class="cnt"><b>18</b><small>отзывов</small></span>
+        </button>
+        <button class="pbar-row" type="button" onclick="pb(this)" aria-pressed="false">
+          <span>
+            <span class="pbar-top"><span class="mk"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></span><span class="nm">Отказ возвращать деньги</span><span class="ok">выбрано</span></span>
+            <span class="track"><span class="fill" style="width:11%"></span></span>
+          </span>
+          <span class="cnt"><b>16</b><small>отзывов</small></span>
+        </button>
+      </div>
+
+      <div class="own">
+        <div class="own-line">
+          <span class="si">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="own" placeholder="Или впишите своё: «не перезвонили» — найдём подходящий тег" oninput="ownFind(this)" aria-label="Свой вариант боли">
+          </span>
+        </div>
+        <p class="own-found" id="ownFound">Нашли тег: <b>«Не перезванивают»</b> · 31 совпадение в отзывах</p>
+      </div>
+    </div>
+
+    <!-- где искать -->
+    <div class="cell where">
+      <p class="lab">Где искать</p>
+      <div class="w-field">
+        <label for="city">Город</label>
+        <input id="city" list="cities3" value="Москва">
+        <datalist id="cities3"><option value="Москва"><option value="Санкт-Петербург"><option value="Казань"><option value="Балашиха"></datalist>
+      </div>
+      <div class="w-field">
+        <label for="niche3">Ниша</label>
+        <input id="niche3" list="niches3" value="Стоматология">
+        <datalist id="niches3"><option value="Стоматология"><option value="Автосервис"><option value="Фитнес-клуб"><option value="Ресторан"></datalist>
+        <p class="w-note">Оставьте пустым — покажем по всем нишам города</p>
+      </div>
+      <div class="w-field">
+        <label>Отзывы из каких источников</label>
+        <div class="src-seg" role="group" aria-label="Источник отзывов">
+          <button class="on" type="button" onclick="seg(this)">Все</button>
+          <button type="button" onclick="seg(this)">Яндекс.Карты</button>
+          <button type="button" onclick="seg(this)">2GIS</button>
+          <button type="button" onclick="seg(this)">Google</button>
+        </div>
+      </div>
+      <div class="w-cta">
+        <button class="btn-primary" onclick="document.getElementById('results').scrollIntoView({behavior:'smooth'})">
+          Показать компании
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <p class="m">по уже собранной базе — результат сразу</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- результаты -->
+  <section id="results" aria-label="Результаты">
+    <div class="res-head">
+      <div>
+        <div class="res-n mono">34</div>
+        <p class="res-t">компании с жалобами на <b>«Не могут дозвониться»</b></p>
+        <p class="res-sub">из них <span class="mono">21</span> без сайта · <span class="mono">17</span> с оборотом от 1 млн ₽ · боль встречается в <span class="mono">142</span> отзывах</p>
+      </div>
+      <div class="res-actions">
+        <label><input type="checkbox" onchange="document.querySelectorAll('.rpick').forEach(c=>{c.checked=this.checked;document.getElementById('rpN').textContent=document.querySelectorAll('.rpick:checked').length})"> Выбрать всех</label>
+        <button class="abtn">
+          <svg class="ic" style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16"/></svg>
+          Excel
+        </button>
+        <button class="abtn">
+          <svg class="ic" style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 3L11 14M22 3l-7 19-4-8-8-4 19-7z"/></svg>
+          Написать выбранным (<span class="mono" id="rpN">0</span>)
+        </button>
+        <button class="abtn">
+          <svg class="ic" style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          В список
+        </button>
+      </div>
+    </div>
+
+    <div class="list">
+      <article class="row">
+        <div>
+          <div class="r-line1"><span class="r-name">Стоматология «Улыбка+»</span><span class="r-sub">Москва, ул. Ленина 12 · ★ 3.8 · 142 отзыва</span></div>
+          <div class="pains"><span class="pain">Не могут дозвониться<span class="n">×12</span></span><span class="pain">Не перезванивают<span class="n">×5</span></span></div>
+          <p class="r-quote">Оставила заявку через сайт три дня назад — ни звонка, ни SMS. Записалась в другую клинику.</p>
+          <div class="r-meta">
+            <span class="flag bad"><span class="fdot"></span>31 негатив</span><span class="sep">·</span>
+            <span class="flag mut"><span class="fdot"></span>нет сайта</span><span class="sep">·</span>
+            <span class="flag mut"><span class="fdot"></span>ООО · 5 лет</span>
+          </div>
+        </div>
+        <div class="r-side">
+          <span class="temp t-hot"><span class="tv">78</span><span class="tl">готовность</span></span>
+          <span class="r-contact">+7 495 123-45-67</span>
+          <span class="r-acts">
+            <button class="ibtn solid">Написать под боль</button>
+            <button class="ibtn">Отзывы · 12</button>
+          </span>
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <div class="r-line1"><span class="r-name">Стоматология «Ортодонт-Про»</span><span class="r-sub">Балашиха, Советская 30 · ★ 3.9 · 118 отзывов</span></div>
+          <div class="pains"><span class="pain">Не могут дозвониться<span class="n">×11</span></span><span class="pain">Потерянная заявка<span class="n">×4</span></span></div>
+          <p class="r-quote">Трижды оставлял заявку на консультацию — ни разу не перезвонили.</p>
+          <div class="r-meta">
+            <span class="flag bad"><span class="fdot"></span>27 негатива</span><span class="sep">·</span>
+            <span class="flag mut"><span class="fdot"></span>нет сайта</span><span class="sep">·</span>
+            <span class="flag mut"><span class="fdot"></span>ООО · 3 года</span>
+          </div>
+        </div>
+        <div class="r-side">
+          <span class="temp t-hot"><span class="tv">74</span><span class="tl">готовность</span></span>
+          <span class="r-contact">+7 495 340-11-22</span>
+          <span class="r-acts">
+            <button class="ibtn solid">Написать под боль</button>
+            <button class="ibtn">Отзывы · 11</button>
+          </span>
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <div class="r-line1"><span class="r-name">Клиника «Здоровье»</span><span class="r-sub">Москва, Волгоградский пр-т 42 · ★ 4.1 · 89 отзывов</span></div>
+          <div class="pains"><span class="pain">Не могут дозвониться<span class="n">×8</span></span><span class="pain">Долгая запись<span class="n">×4</span></span></div>
+          <p class="r-quote">Неделю пытаюсь записаться к врачу: телефон занято с 9 до 18, онлайн-записи нет.</p>
+          <div class="r-meta">
+            <span class="flag bad"><span class="fdot"></span>19 негатива</span><span class="sep">·</span>
+            <span class="flag mut"><span class="fdot"></span>zdorovie-msk.ru</span><span class="sep">·</span>
+            <span class="flag mut"><span class="fdot"></span>ООО · 12 лет</span>
+          </div>
+        </div>
+        <div class="r-side">
+          <span class="temp t-warm"><span class="tv">58</span><span class="tl">готовность</span></span>
+          <span class="r-contact">+7 495 555-12-33</span>
+          <span class="r-acts">
+            <button class="ibtn solid">Написать под боль</button>
+            <button class="ibtn">Отзывы · 8</button>
+          </span>
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <div class="r-line1"><span class="r-name">Детская клиника «Радуга»</span><span class="r-sub">Москва, ул. Академика 8 · ★ 4.3 · 156 отзывов</span></div>
+          <div class="pains"><span class="pain">Не могут дозвониться<span class="n">×6</span></span></div>
+          <p class="r-quote">Единственный телефон вечно занят. С болеющим ребёнком — это катастрофа.</p>
+          <div class="r-meta">
+            <span class="flag bad"><span class="fdot"></span>14 негатива</span><span class="sep">·</span>
+            <span class="flag mut"><span class="fdot"></span>raduga-kids.ru</span><span class="sep">·</span>
+            <span class="flag mut"><span class="fdot"></span>ООО · 6 лет</span>
+          </div>
+        </div>
+        <div class="r-side">
+          <span class="temp t-warm"><span class="tv">49</span><span class="tl">готовность</span></span>
+          <span class="r-contact">+7 495 200-30-40</span>
+          <span class="r-acts">
+            <button class="ibtn solid">Написать под боль</button>
+            <button class="ibtn">Отзывы · 6</button>
+          </span>
+        </div>
+      </article>
+    </div>
+
+    <div class="pager">
+      <button class="pg" disabled>← Назад</button>
+      <span><span class="mono">1–34</span> из <span class="mono">34</span></span>
+      <button class="pg" disabled>Дальше →</button>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span><b>Прототип 3/3</b> · поиск по боли</span>
+  <a href="01-poisk-lidov.html">← Вход поиска</a>
+  <a href="02-rezultaty-poiska.html">Результаты →</a>
+</footer>
+
+<script>
+function pb(b){
+  b.classList.toggle('on');
+  b.setAttribute('aria-pressed',b.classList.contains('on'));
+}
+function seg(b){b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+function ownFind(i){document.getElementById('ownFound').classList.toggle('show',i.value.trim().length>2)}
+function toggleMore(){
+  const l=document.getElementById('moreList');
+  l.classList.toggle('show');
+  document.getElementById('moreBtn').textContent=l.classList.contains('show')?'Скрыть дополнительные':'Показать ещё 14 болей этой ниши';
+}
+</script>
+</body>
+</html>

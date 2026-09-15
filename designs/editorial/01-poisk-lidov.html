@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Поиск — SpinLid · editorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ————— editorial: газетная типографика, волосяные линейки ————— */
+:root{
+  --paper:#FFFFFF; --tint:#F1F1F1; --tint-2:#F7F7F7;
+  --ink:#111111; --ink-2:#444444; --ink-3:#8A8A8A;
+  --rule:#111111; --hair:#DDDDDD;
+  --blue:#0F62FE;
+  --good:#16A34A; --warn:#D97706; --bad:#DC2626;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:var(--blue);color:#fff}
+body{font-family:'IBM Plex Sans','Segoe UI',sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.mono{font-family:'Ubuntu Mono',monospace;font-variant-numeric:tabular-nums;font-size:.95em}
+.serif{font-family:'Playfair Display',Georgia,serif}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+
+/* masthead */
+.mast{border-top:3px solid var(--ink);border-bottom:1px solid var(--rule);background:#fff;position:sticky;top:0;z-index:30}
+.mast-in{display:flex;align-items:center;gap:26px;height:58px}
+.mast .brand{font-family:'Playfair Display',serif;font-weight:900;font-size:23px;letter-spacing:-.01em}
+.mast .brand i{font-style:italic;color:var(--blue)}
+.mast nav{display:flex;gap:20px;font-size:13px;font-weight:600;letter-spacing:.02em}
+.mast nav a{color:var(--ink-2);padding:4px 0;border-bottom:2px solid transparent}
+.mast nav a:hover{color:var(--ink)}
+.mast nav a[aria-current]{color:var(--ink);border-bottom-color:var(--blue)}
+.mast .ed{margin-left:auto;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.announce{border-bottom:1px solid var(--hair);background:var(--tint-2)}
+.announce .wrap{display:flex;justify-content:center;gap:8px;padding:7px 24px;font-size:12.5px;color:var(--ink-2)}
+.announce b{color:var(--blue);font-weight:600}
+
+main{padding:56px 0 110px}
+
+/* лид-статья */
+.lead{display:grid;grid-template-columns:1.55fr 1fr;gap:48px;align-items:start}
+@media(max-width:880px){.lead{grid-template-columns:1fr}}
+.kicker{font-size:11.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.kicker::after{content:'';flex:1;border-top:1px solid var(--hair)}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(34px,4.6vw,52px);font-weight:900;line-height:1.06;letter-spacing:-.015em}
+h1 em{font-style:italic;font-weight:500;color:var(--ink-2)}
+.standfirst{margin-top:20px;font-size:17px;line-height:1.65;color:var(--ink-2);max-width:58ch}
+.standfirst b{color:var(--ink);font-weight:600}
+.meta{display:flex;gap:14px;margin-top:16px;font-size:12px;color:var(--ink-3);flex-wrap:wrap;align-items:center}
+.meta .dot{width:3px;height:3px;border-radius:50%;background:var(--ink-3)}
+
+/* правая колонка: как это работает */
+.how{border-top:1px solid var(--rule);padding-top:16px}
+.how h2{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:14px}
+.how-item{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--hair)}
+.how-item:last-child{border-bottom:none}
+.how-item .n{font-family:'Ubuntu Mono',monospace;font-size:12px;color:var(--blue);font-weight:700;padding-top:3px}
+.how-item b{display:block;font-size:14px;font-weight:600}
+.how-item p{font-size:13px;color:var(--ink-2);line-height:1.55;margin-top:2px}
+
+/* форма — «бланк» газеты */
+.blank{margin-top:52px;border:1px solid var(--rule);border-radius:4px}
+.blank-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 22px;border-bottom:1px solid var(--rule);background:var(--tint-2);flex-wrap:wrap}
+.blank-h h2{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+.blank-h .st{font-size:12px;color:var(--ink-3)}
+.frow{display:grid;grid-template-columns:1.4fr 1fr auto;gap:26px;padding:24px 22px;align-items:end}
+@media(max-width:840px){.frow{grid-template-columns:1fr}}
+.fl label{display:block;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px}
+.inp{width:100%;background:#fff;border:none;border-bottom:2px solid var(--ink);padding:9px 2px;font-size:17px;font-weight:500;font-family:'Playfair Display',serif}
+.inp::placeholder{color:var(--ink-3);font-weight:400;font-style:italic}
+.inp:focus{outline:none;border-bottom-color:var(--blue)}
+.note{font-size:12px;color:var(--ink-3);margin-top:7px}
+.hints{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.hints button{font-size:12px;color:var(--ink-2);border:1px solid var(--hair);border-radius:3px;padding:3px 10px}
+.hints button:hover{border-color:var(--ink);color:var(--ink)}
+.btn-go{background:var(--blue);color:#fff;font-size:14px;font-weight:600;letter-spacing:.04em;padding:14px 30px;border-radius:3px;transition:.12s;white-space:nowrap;min-height:48px}
+.btn-go:hover{background:#004ACC}
+.go-meta{font-size:12.5px;color:var(--ink-3);margin-top:16px;padding:0 22px 18px}
+.go-meta .mono{font-weight:700;color:var(--ink)}
+
+/* источники под бланком */
+.srcs{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--hair)}
+.src{flex:1;min-width:190px;display:flex;gap:11px;padding:15px 22px;border-right:1px solid var(--hair);text-align:left;align-items:flex-start}
+.src:last-child{border-right:none}
+.src .box{width:15px;height:15px;border:1.5px solid var(--ink);border-radius:2px;display:grid;place-items:center;font-size:9px;font-weight:700;color:transparent;margin-top:3px;flex-shrink:0}
+.src.on .box{background:var(--ink);color:#fff}
+.src b{display:block;font-size:14px;font-weight:600}
+.src small{font-size:11.5px;color:var(--ink-3)}
+@media(max-width:760px){.src{border-right:none;border-bottom:1px solid var(--hair)}}
+
+/* рубрики */
+.rubric{margin-top:64px;display:flex;align-items:baseline;gap:16px;border-top:3px solid var(--ink);padding-top:10px}
+.rubric h2{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;font-style:italic}
+.rubric span{font-size:12px;color:var(--ink-3);margin-left:auto;font-style:normal}
+
+/* быстрые старты — колонка новостей */
+.news{display:grid;grid-template-columns:repeat(4,1fr);margin-top:8px}
+@media(max-width:880px){.news{grid-template-columns:1fr 1fr}}
+.news button{display:block;text-align:left;padding:16px 18px 16px 0;border-right:1px solid var(--hair);margin-right:18px;transition:.12s}
+.news button:last-child{border-right:none;margin-right:0}
+@media(max-width:880px){.news button{border-right:none;margin-right:0;border-bottom:1px solid var(--hair)}}
+.news button:hover b{color:var(--blue)}
+.news small{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--blue)}
+.news b{display:block;font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin:5px 0 4px;transition:.12s;line-height:1.2}
+.news span{font-size:12.5px;color:var(--ink-2)}
+
+/* пресеты */
+.psets{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.pset{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--ink-2);border:1px solid var(--ink);border-radius:99px;padding:8px 16px;transition:.12s;background:#fff}
+.pset:hover{background:var(--ink);color:#fff}
+.pset .ai{font-size:9.5px;font-weight:700;letter-spacing:.1em;color:var(--blue);border:1px solid currentColor;border-radius:3px;padding:0 5px}
+.pset:hover .ai{color:#fff}
+.pset.add{border-style:dashed;color:var(--ink-3)}
+.pset.add:hover{background:none;color:var(--ink)}
+
+/* тонкая настройка */
+details.adv{margin-top:48px;border-top:1px solid var(--rule);border-bottom:1px solid var(--hair)}
+details.adv>summary{list-style:none;display:flex;align-items:center;gap:14px;padding:16px 2px;cursor:pointer;user-select:none}
+details.adv>summary::-webkit-details-marker{display:none}
+details.adv>summary .t{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;font-style:italic}
+details.adv>summary .m{margin-left:auto;font-size:12px;color:var(--ink-3)}
+.adv-b{padding:8px 2px 28px;display:flex;flex-direction:column;gap:26px}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+@media(max-width:760px){.adv-grid{grid-template-columns:1fr}}
+.seg{display:inline-flex;border:1px solid var(--ink);border-radius:3px;overflow:hidden;margin-bottom:18px}
+.seg button{padding:9px 18px;font-size:13px;font-weight:600;border-right:1px solid var(--ink)}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--ink);color:#fff}
+.seg .nw{color:var(--blue);margin-left:5px;font-size:10px}
+.rad{display:none;gap:14px;align-items:end;margin-bottom:18px;flex-wrap:wrap}
+.rad.show{display:flex}
+.rad .inp{flex:1;min-width:200px;font-size:15px}
+.rad input[type=range]{accent-color:var(--blue);width:160px;margin-bottom:12px}
+.rad .val{font-family:'Ubuntu Mono',monospace;font-size:14px;font-weight:700}
+.wtg{display:flex;gap:0;border:1px solid var(--ink);border-radius:3px;overflow:hidden;width:max-content;margin-bottom:12px}
+.wtg button{padding:7px 16px;font-size:12.5px;font-weight:600;border-right:1px solid var(--ink)}
+.wtg button:last-child{border-right:none}
+.wtg button.on{background:var(--blue);color:#fff}
+.tip{grid-column:1/-1;font-size:13.5px;color:var(--ink-2);border-left:3px solid var(--blue);padding:4px 0 4px 16px;max-width:72ch}
+.tip b{color:var(--ink)}
+
+.foot{border-top:3px solid var(--ink);margin-top:80px}
+.foot .wrap{display:flex;gap:22px;padding-top:14px;padding-bottom:44px;font-size:12.5px;color:var(--ink-3);flex-wrap:wrap}
+.foot a{color:var(--ink-2);font-weight:600;border-bottom:1px solid var(--hair)}
+.foot a:hover{border-bottom-color:var(--blue);color:var(--blue)}
+.foot b{color:var(--ink)}
+.ic{width:14px;height:14px}
+</style>
+</head>
+<body>
+
+<div class="announce"><div class="wrap"><span><b>Поиск по картам</b> · компании из 2GIS, Яндекс.Карт и Google — с диагнозом по отзывам</span></div></div>
+
+<header class="mast"><div class="wrap mast-in">
+  <a class="brand" href="#">Spin<i>lid</i></a>
+  <nav aria-label="Разделы">
+    <a href="#" aria-current="page">Поиск</a>
+    <a href="03-poisk-po-boli.html">По боли</a>
+    <a href="#">История</a>
+    <a href="#">Списки</a>
+    <a href="#">КП</a>
+  </nav>
+  <span class="ed">Дизайн 3/6 · Editorial</span>
+</div></header>
+
+<main><div class="wrap">
+  <section class="lead">
+    <article>
+      <p class="kicker">Лидогенерация по картам</p>
+      <h1>Кому писать первым, <em>подскажут отзывы их клиентов</em></h1>
+      <p class="standfirst">Укажите нишу и город. SpinLid соберёт компании с 2GIS, Яндекс.Карт и Google Карт, прочитает отзывы и покажет, <b>на что жалуются клиенты каждой компании</b> — с цитатой и контактом для первого письма.</p>
+      <p class="meta"><span>Никакой «базы из 1000 контактов»</span><span class="dot"></span><span>только повод зайти</span><span class="dot"></span><span>обновлено сегодня</span></p>
+    </article>
+    <aside class="how" aria-label="Как это работает">
+      <h2>Как это работает</h2>
+      <div class="how-item"><span class="n">01</span><div><b>Собираем карточки</b><p>Компании с карт: название, адрес, рейтинг, телефон, сайт.</p></div></div>
+      <div class="how-item"><span class="n">02</span><div><b>Читаем отзывы</b><p>AI группирует жалобы в боли с числом упоминаний и цитатой.</p></div></div>
+      <div class="how-item"><span class="n">03</span><div><b>Готовим письмо</b><p>Черновик КП под конкретную боль — в один клик.</p></div></div>
+    </aside>
+  </section>
+
+  <section class="blank" aria-label="Параметры поиска">
+    <div class="blank-h"><h2>Новый поиск</h2><span class="st">1 поиск · обычно 50–300 компаний</span></div>
+    <div class="frow">
+      <div class="fl">
+        <label for="niche">Ниша или вид бизнеса</label>
+        <input class="inp" id="niche" list="n" value="Стоматология" placeholder="Например: стоматология">
+        <datalist id="n"><option value="Стоматология"><option value="Автосервис"><option value="Фитнес-клуб"><option value="Ветклиника"></datalist>
+        <div class="hints"><button type="button" onclick="sv(this)">стоматология</button><button type="button" onclick="sv(this)">автосервис</button><button type="button" onclick="sv(this)">фитнес-клуб</button></div>
+      </div>
+      <div class="fl">
+        <label for="city">Город</label>
+        <input class="inp" id="city" list="c" value="Москва" placeholder="Например: Москва">
+        <datalist id="c"><option value="Москва"><option value="Санкт-Петербург"><option value="Казань"><option value="Балашиха"></datalist>
+        <p class="note">Москва + 12 городов Подмосковья одним поиском</p>
+      </div>
+      <div><button class="btn-go" onclick="location.href='02-rezultaty-poiska.html'">Найти компании →</button></div>
+    </div>
+    <p class="go-meta">Обычно <span class="mono">50–300</span> компаний за <span class="mono">2–5 мин</span> — сразу с болями и цитатами из отзывов</p>
+    <div class="srcs" role="group" aria-label="Источники отзывов">
+      <button class="src on" type="button" onclick="tg(this)"><span class="box">✓</span><span><b>2GIS</b><small>основной · нужен ключ</small></span></button>
+      <button class="src on" type="button" onclick="tg(this)"><span class="box">✓</span><span><b>Яндекс.Карты</b><small>бесплатно</small></span></button>
+      <button class="src" type="button" onclick="tg(this)"><span class="box">✓</span><span><b>Google Maps</b><small>через SerpAPI · платно</small></span></button>
+    </div>
+  </section>
+
+  <div class="rubric"><h2>Быстрый старт</h2><span>НЕ ЗНАЕТЕ, ЧТО ВВЕСТИ?</span></div>
+  <div class="news">
+    <button onclick="location.href='02-rezultaty-poiska.html'"><small>Москва</small><b>Стоматологии</b><span>~280 клиник · жалобы на запись и ожидание</span></button>
+    <button onclick="location.href='02-rezultaty-poiska.html'"><small>Санкт-Петербург</small><b>Автосервисы</b><span>~340 сервисов · сроки и доп. работы</span></button>
+    <button onclick="location.href='02-rezultaty-poiska.html'"><small>Москва</small><b>Фитнес-клубы</b><span>~190 клубов · возвраты денег</span></button>
+    <button onclick="location.href='02-rezultaty-poiska.html'"><small>Казань</small><b>Рестораны</b><span>~260 точек · долгая подача</span></button>
+  </div>
+
+  <div class="rubric" style="margin-top:44px"><h2>Мои пресеты</h2></div>
+  <div class="psets">
+    <button class="pset">Клиники с негативом <span class="ai">AI</span></button>
+    <button class="pset">Без сайта · Москва</button>
+    <button class="pset">Стоматология · область</button>
+    <button class="pset add">Сохранить текущие настройки</button>
+  </div>
+
+  <details class="adv">
+    <summary><span class="t">Тонкая настройка</span><span class="mono" style="font-size:12px;color:var(--ink-3)">радиус · слова · массовый прогон</span><span class="m">раскрыть ▾</span></summary>
+    <div class="adv-b">
+      <div class="adv-grid">
+        <div>
+          <div class="seg" role="group" aria-label="Режим">
+            <button class="on" type="button" onclick="md(this,'city')">По городу</button>
+            <button type="button" onclick="md(this,'radius')">В радиусе от адреса<span class="nw">NEW</span></button>
+          </div>
+          <div class="rad" id="rad">
+            <input class="inp" type="text" placeholder="Адрес: ул. Ленина, 12" aria-label="Адрес центра">
+            <div><input type="range" min="0.5" max="10" step="0.5" value="3" oninput="this.nextElementSibling.textContent=this.value+' км'" aria-label="Радиус"><div class="val">3 км</div></div>
+          </div>
+          <div class="fl"><label for="mn">Ещё ниши — через запятую</label><input class="inp" id="mn" style="font-size:15px" placeholder="стоматология, имплантация"></div>
+          <div class="fl" style="margin-top:16px"><label for="mc">Ещё города</label><input class="inp" id="mc" style="font-size:15px" placeholder="Москва, Балашиха, Мытищи"></div>
+        </div>
+        <div class="fl">
+          <label>Слова в отзывах</label>
+          <div class="wtg"><button class="on" type="button" onclick="wm(this)">Содержит</button><button type="button" onclick="wm(this)">Не содержит</button></div>
+          <input class="inp" style="font-size:15px" type="text" placeholder="не дозвонился, не перезвонили" aria-label="Слова в отзывах">
+        </div>
+        <p class="tip"><b>Фильтры по рейтингу, обороту, ЛПР и сайту</b> — на странице результатов: крутите их по уже найденным компаниям, не запуская поиск заново.</p>
+      </div>
+    </div>
+  </details>
+</div></main>
+
+<footer class="foot"><div class="wrap">
+  <span><b>Прототип</b> · editorial · 1/6</span>
+  <a href="02-rezultaty-poiska.html">Результаты →</a>
+  <a href="03-poisk-po-boli.html">По боли →</a>
+  <a href="../index.html">Все 6 дизайнов</a>
+</div></footer>
+
+<script>
+function sv(b){document.getElementById('niche').value=b.textContent}
+function tg(b){b.classList.toggle('on')}
+function wm(b){b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+function md(btn,m){btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.getElementById('rad').classList.toggle('show',m==='radius')}
+</script>
+</body>
+</html>

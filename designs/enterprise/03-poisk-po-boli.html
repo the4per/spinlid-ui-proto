@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Поиск по боли · enterprise · SpinLid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090B; --bg-2:#0C0C0F; --panel:#101014; --panel-2:#14141A;
+  --line:#1F1F27; --line-2:#2A2A34;
+  --text:#FAFAFA; --mut:#A1A1AA; --faint:#6B6B74;
+  --blue:#0C5CAB; --blue-hi:#0E6BC7; --blue-tx:#4D9FFF;
+  --ok:#10B981; --warn:#F59E0B; --bad:#EF4444;
+  --r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:#0C5CAB;color:#fff}
+body{font-family:'IBM Plex Sans','Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue-tx);outline-offset:2px;border-radius:4px}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:.93em}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.topbar{position:sticky;top:0;z-index:40;background:rgba(9,9,11,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.tb-in{max-width:1220px;margin:0 auto;padding:0 24px;height:54px;display:flex;align-items:center;gap:18px}
+.crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--faint)}
+.crumb b{color:var(--text);font-weight:600}
+.crumb .sep{color:var(--line-2)}
+.tbnav{display:flex;gap:4px;margin-left:6px}
+.tbnav a{font-size:13px;color:var(--mut);padding:6px 12px;border-radius:6px;font-weight:500}
+.tbnav a:hover{background:var(--panel-2);color:var(--text)}
+.tbnav a[aria-current]{background:var(--panel-2);color:var(--text);font-weight:600;box-shadow:inset 0 -2px 0 var(--blue-hi)}
+.tb-right{margin-left:auto;font-size:12px;color:var(--faint)}
+
+main{max-width:1220px;margin:0 auto;padding:34px 24px 110px}
+.hero h1{font-size:25px;font-weight:700;letter-spacing:-.015em}
+.hero p{margin-top:9px;color:var(--mut);font-size:14px;max-width:64ch}
+.hero p b{color:var(--text);font-weight:600}
+
+.cols{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-top:24px;align-items:start}
+@media(max-width:920px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 10px 30px -18px rgba(0,0,0,.8)}
+.p-h{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+.p-h h2{font-size:13.5px;font-weight:600}
+.p-h span{font-size:11.5px;color:var(--faint)}
+.p-b{padding:10px}
+
+/* метрики болей */
+.mrow{display:grid;grid-template-columns:1fr 60px 8px;gap:14px;align-items:center;padding:9px 12px;border-radius:8px;width:100%;text-align:left;min-height:44px;transition:.1s}
+.mrow:hover{background:var(--panel-2)}
+.mrow.on{background:rgba(12,92,171,.14);box-shadow:inset 0 0 0 1px var(--blue-hi)}
+.mrow .tw{display:flex;align-items:center;gap:10px}
+.mrow .mk{width:15px;height:15px;border:1.5px solid var(--line-2);border-radius:4px;display:grid;place-items:center;font-size:9px;color:transparent;flex-shrink:0}
+.mrow.on .mk{background:var(--blue);border-color:var(--blue);color:#fff}
+.mrow .nm{font-size:13.5px;font-weight:500}
+.mrow.on .nm{font-weight:600}
+.mrow .track{height:5px;border-radius:99px;background:var(--bg-2);overflow:hidden;margin-top:6px}
+.mrow .fill{height:100%;border-radius:99px;background:var(--line-2)}
+.mrow.on .fill{background:linear-gradient(90deg,var(--blue),var(--blue-tx))}
+.mrow .cnt{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;text-align:right}
+.mrow .cnt small{display:block;font-family:'IBM Plex Sans';font-size:10.5px;color:var(--faint);font-weight:400}
+.mrow .sp{width:8px}
+.pmore{width:100%;padding:11px 12px;border-top:1px solid var(--line);margin-top:8px;font-size:12.5px;font-weight:600;color:var(--blue-tx);text-align:left}
+.mlist{display:none}
+.mlist.show{display:block}
+
+/* свой вариант */
+.own{padding:13px 16px;border-top:1px solid var(--line)}
+.own label{display:block;font-size:11.5px;color:var(--mut);font-weight:500;margin-bottom:7px}
+.inp{width:100%;height:38px;padding:0 12px;background:var(--bg-2);border:1px solid var(--line-2);border-radius:8px;font-size:13.5px}
+.inp:focus{outline:none;border-color:var(--blue-hi);box-shadow:0 0 0 3px rgba(12,92,171,.25)}
+.ofound{display:none;margin-top:9px;font-size:12.5px;color:var(--mut)}
+.ofound.show{display:block}
+.ofound b{color:var(--blue-tx)}
+
+/* где искать */
+.w-b{padding:16px;display:flex;flex-direction:column;gap:14px}
+.fl label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin-bottom:6px}
+.segchips{display:flex;flex-wrap:wrap;gap:6px}
+.segchips button{font-size:12px;font-weight:500;color:var(--mut);border:1px solid var(--line-2);border-radius:7px;padding:6px 12px;background:var(--bg-2)}
+.segchips button.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.btn-primary{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:44px;background:var(--blue);border:1px solid var(--blue);border-radius:8px;color:#fff;font-size:14px;font-weight:600;box-shadow:0 6px 16px -8px rgba(12,92,171,.7);transition:.12s;margin-top:auto}
+.btn-primary:hover{background:var(--blue-hi)}
+.cta-m{font-size:11.5px;color:var(--faint);text-align:center;margin-top:9px}
+.ic{width:13px;height:13px}
+
+/* результаты */
+.res-head{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-top:28px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.res-n{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:600;line-height:1;color:var(--blue-tx)}
+.res-t{font-size:14px;color:var(--mut)}
+.res-t b{color:var(--text);font-weight:600}
+.res-sub{font-size:12px;color:var(--faint);margin-top:3px}
+.res-sub .mono{color:var(--mut)}
+.res-act{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.res-act label{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--mut);min-height:38px}
+.res-act input{width:15px;height:15px;accent-color:#0E6BC7}
+.abtn{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;border:1px solid var(--line-2);border-radius:7px;padding:8px 13px;background:var(--bg-2);color:var(--mut);min-height:38px}
+.abtn:hover{color:var(--text);border-color:var(--blue-hi)}
+
+.rows{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;transition:.1s}
+.row:hover{border-color:var(--line-2);background:var(--panel-2)}
+.row input{width:15px;height:15px;accent-color:#0E6BC7;margin-top:3px}
+.r-l1{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.r-n{font-size:15px;font-weight:600}
+.r-m{font-size:12px;color:var(--faint)}
+.ptags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.pt{display:inline-flex;gap:5px;font-size:11px;font-weight:500;color:#FCA5A5;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.28);border-radius:5px;padding:1px 8px}
+.pt .n{color:#EF444499}
+.qt{margin-top:8px;color:var(--mut);font-size:13px;max-width:64ch}
+.flgs{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px}
+.fb{display:inline-flex;font-size:10.5px;font-weight:600;border-radius:4px;padding:1px 7px;border:1px solid transparent}
+.fb.bad{color:#FCA5A5;background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.28)}
+.fb.mut{color:var(--mut);background:var(--bg-2);border-color:var(--line-2)}
+.r-side{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+.tv{font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600}
+.tv.hot{color:var(--bad)}.tv.warm{color:var(--warn)}
+.tl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.ph{font-family:'IBM Plex Mono',monospace;font-size:12.5px}
+.acts{display:flex;gap:6px;margin-top:4px}
+.mini{font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:6px;border:1px solid var(--line-2);color:var(--mut);background:var(--bg-2)}
+.mini:hover{color:var(--text);border-color:var(--blue-hi)}
+.mini.solid{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;padding-top:16px;font-size:12.5px;color:var(--mut)}
+.pg{border:1px solid var(--line-2);border-radius:8px;padding:7px 14px;font-weight:600;color:var(--mut);background:var(--panel)}
+.pg:disabled{opacity:.35;cursor:default}
+
+.foot{max-width:1220px;margin:36px auto 0;padding:0 24px 44px;display:flex;gap:18px;font-size:12.5px;color:var(--faint)}
+.foot a{color:var(--mut);font-weight:500}
+.foot a:hover{color:var(--blue-tx)}
+.foot b{color:var(--mut)}
+@media(max-width:760px){.row{grid-template-columns:auto 1fr}.r-side{grid-column:2;flex-direction:row;align-items:center;flex-wrap:wrap}.res-act{margin-left:0}}
+</style>
+</head>
+<body>
+
+<header class="topbar"><div class="tb-in">
+  <span class="crumb"><b>SpinLid</b><span class="sep">/</span>По боли</span>
+  <nav class="tbnav" aria-label="Разделы">
+    <a href="01-poisk-lidov.html">Поиск</a>
+    <a href="#" aria-current="page">По боли</a>
+    <a href="#">История</a>
+  </nav>
+  <div class="tb-right">Дизайн 4/6 · Enterprise</div>
+</div></header>
+
+<main>
+  <section class="hero">
+    <h1>Поиск по боли клиентов</h1>
+    <p>Выберите частую жалобу — покажем компании, где она встречается в реальных отзывах, с <b>цитатой и контактом</b>. Самый сильный повод для первого письма.</p>
+  </section>
+
+  <div class="cols">
+    <section class="panel" aria-label="Метрики болей">
+      <div class="p-h"><h2>На что жалуются</h2><span>Стоматология · Москва · 628 негативных отзывов</span></div>
+      <div class="p-b">
+        <button class="mrow on" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Не могут дозвониться</span></span><span class="track"><span class="fill" style="width:100%"></span></span></span><span class="cnt">142<small>отзыва</small></span><span class="sp"></span></button>
+        <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Долго ждать приёма</span></span><span class="track"><span class="fill" style="width:69%"></span></span></span><span class="cnt">98<small>отзывов</small></span><span class="sp"></span></button>
+        <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Непонятные цены</span></span><span class="track"><span class="fill" style="width:54%"></span></span></span><span class="cnt">76<small>отзывов</small></span><span class="sp"></span></button>
+        <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Грубость персонала</span></span><span class="track"><span class="fill" style="width:47%"></span></span></span><span class="cnt">67<small>отзывов</small></span><span class="sp"></span></button>
+        <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Потерянная заявка</span></span><span class="track"><span class="fill" style="width:38%"></span></span></span><span class="cnt">54<small>отзыва</small></span><span class="sp"></span></button>
+        <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Очередь, несмотря на запись</span></span><span class="track"><span class="fill" style="width:32%"></span></span></span><span class="cnt">45<small>отзывов</small></span><span class="sp"></span></button>
+        <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Сорванные сроки</span></span><span class="track"><span class="fill" style="width:27%"></span></span></span><span class="cnt">39<small>отзывов</small></span><span class="sp"></span></button>
+        <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Грязь и неубрано</span></span><span class="track"><span class="fill" style="width:20%"></span></span></span><span class="cnt">28<small>отзывов</small></span><span class="sp"></span></button>
+        <div class="mlist" id="ml">
+          <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Навязывают доп. услуги</span></span><span class="track"><span class="fill" style="width:15%"></span></span></span><span class="cnt">21<small>отзыв</small></span><span class="sp"></span></button>
+          <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Нет парковки</span></span><span class="track"><span class="fill" style="width:13%"></span></span></span><span class="cnt">18<small>отзывов</small></span><span class="sp"></span></button>
+          <button class="mrow" type="button" onclick="mr(this)"><span><span class="tw"><span class="mk">✓</span><span class="nm">Отказ возвращать деньги</span></span><span class="track"><span class="fill" style="width:11%"></span></span></span><span class="cnt">16<small>отзывов</small></span><span class="sp"></span></button>
+        </div>
+        <button class="pmore" type="button" onclick="document.getElementById('ml').classList.toggle('show');this.textContent=this.textContent.includes('Показать')?'Скрыть':'Показать ещё 14 болей'">Показать ещё 14 болей</button>
+      </div>
+      <div class="own">
+        <label for="own">Или впишите своё — найдём подходящий тег</label>
+        <input class="inp" id="own" placeholder="например: «не перезвонили»" oninput="document.getElementById('of').classList.toggle('show',this.value.trim().length>2)">
+        <p class="ofound" id="of">Найден тег: <b>«Не перезванивают»</b> · 31 совпадение в отзывах</p>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Где искать">
+      <div class="p-h"><h2>Где искать</h2></div>
+      <div class="w-b">
+        <div class="fl"><label for="c3">Город</label><input class="inp" id="c3" list="c" value="Москва"><datalist id="c"><option value="Москва"><option value="Санкт-Петербург"><option value="Казань"></datalist></div>
+        <div class="fl"><label for="n3">Ниша</label><input class="inp" id="n3" list="n" value="Стоматология"><datalist id="n"><option value="Стоматология"><option value="Автосервис"><option value="Ресторан"></datalist>
+          <p style="font-size:11.5px;color:var(--faint);margin-top:5px">Пусто — по всем нишам города</p></div>
+        <div class="fl"><label>Источник отзывов</label>
+          <div class="segchips"><button class="on" onclick="sg(this)">Все</button><button onclick="sg(this)">Яндекс.Карты</button><button onclick="sg(this)">2GIS</button><button onclick="sg(this)">Google</button></div></div>
+        <button class="btn-primary" onclick="document.getElementById('res').scrollIntoView({behavior:'smooth'})">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          Показать компании
+        </button>
+        <p class="cta-m">по уже собранной базе — результат сразу</p>
+      </div>
+    </section>
+  </div>
+
+  <section id="res" aria-label="Результаты">
+    <div class="res-head">
+      <div>
+        <div class="res-n">34</div>
+        <p class="res-t">компании с жалобами на <b>«Не могут дозвониться»</b></p>
+        <p class="res-sub"><span class="mono">21</span> без сайта · <span class="mono">17</span> с оборотом от 1 млн ₽ · <span class="mono">142</span> отзыва с этой болью</p>
+      </div>
+      <div class="res-act">
+        <label><input type="checkbox" onchange="document.querySelectorAll('.row>input').forEach(c=>c.checked=this.checked)"> Выбрать всех</label>
+        <button class="abtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16"/></svg>Excel</button>
+        <button class="abtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 3L11 14M22 3l-7 19-4-8-8-4 19-7z"/></svg>Написать</button>
+        <button class="abtn">＋ В список</button>
+      </div>
+    </div>
+
+    <div class="rows">
+      <article class="row">
+        <input type="checkbox" aria-label="Выбрать">
+        <div>
+          <div class="r-l1"><span class="r-n">Стоматология «Улыбка+»</span><span class="r-m">Москва, ул. Ленина 12 · ★ 3.8 · 142 отзыва</span></div>
+          <div class="ptags"><span class="pt">Не могут дозвониться<span class="n">×12</span></span><span class="pt">Не перезванивают<span class="n">×5</span></span></div>
+          <p class="qt">Оставила заявку через сайт три дня назад — ни звонка, ни SMS. Записалась в другую клинику.</p>
+          <div class="flgs"><span class="fb bad">31 негатив</span><span class="fb mut">нет сайта</span><span class="fb mut">ООО · 5 лет</span></div>
+        </div>
+        <div class="r-side"><span class="tv hot">78</span><span class="tl">готовность</span><span class="ph">+7 495 123-45-67</span>
+          <div class="acts"><button class="mini solid">Написать под боль</button><button class="mini">Отзывы · 12</button></div></div>
+      </article>
+      <article class="row">
+        <input type="checkbox" aria-label="Выбрать">
+        <div>
+          <div class="r-l1"><span class="r-n">Стоматология «Ортодонт-Про»</span><span class="r-m">Балашиха, Советская 30 · ★ 3.9 · 118 отзывов</span></div>
+          <div class="ptags"><span class="pt">Не могут дозвониться<span class="n">×11</span></span><span class="pt">Потерянная заявка<span class="n">×4</span></span></div>
+          <p class="qt">Трижды оставлял заявку на консультацию — ни разу не перезвонили.</p>
+          <div class="flgs"><span class="fb bad">27 негатива</span><span class="fb mut">нет сайта</span><span class="fb mut">ООО · 3 года</span></div>
+        </div>
+        <div class="r-side"><span class="tv hot">74</span><span class="tl">готовность</span><span class="ph">+7 495 340-11-22</span>
+          <div class="acts"><button class="mini solid">Написать под боль</button><button class="mini">Отзывы · 11</button></div></div>
+      </article>
+      <article class="row">
+        <input type="checkbox" aria-label="Выбрать">
+        <div>
+          <div class="r-l1"><span class="r-n">Клиника «Здоровье»</span><span class="r-m">Москва, Волгоградский 42 · ★ 4.1 · 89 отзывов</span></div>
+          <div class="ptags"><span class="pt">Не могут дозвониться<span class="n">×8</span></span><span class="pt">Долгая запись<span class="n">×4</span></span></div>
+          <p class="qt">Неделю пытаюсь записаться: телефон занято с 9 до 18, онлайн-записи нет.</p>
+          <div class="flgs"><span class="fb bad">19 негатива</span><span class="fb mut">zdorovie-msk.ru</span><span class="fb mut">ООО · 12 лет</span></div>
+        </div>
+        <div class="r-side"><span class="tv warm">58</span><span class="tl">готовность</span><span class="ph">+7 495 555-12-33</span>
+          <div class="acts"><button class="mini solid">Написать под боль</button><button class="mini">Отзывы · 8</button></div></div>
+      </article>
+      <article class="row">
+        <input type="checkbox" aria-label="Выбрать">
+        <div>
+          <div class="r-l1"><span class="r-n">Детская клиника «Радуга»</span><span class="r-m">Москва, ул. Академика 8 · ★ 4.3 · 156 отзывов</span></div>
+          <div class="ptags"><span class="pt">Не могут дозвониться<span class="n">×6</span></span></div>
+          <p class="qt">Единственный телефон вечно занят. С болеющим ребёнком — катастрофа.</p>
+          <div class="flgs"><span class="fb bad">14 негатива</span><span class="fb mut">raduga-kids.ru</span><span class="fb mut">ООО · 6 лет</span></div>
+        </div>
+        <div class="r-side"><span class="tv warm">49</span><span class="tl">готовность</span><span class="ph">+7 495 200-30-40</span>
+          <div class="acts"><button class="mini solid">Написать под боль</button><button class="mini">Отзывы · 6</button></div></div>
+      </article>
+    </div>
+
+    <div class="pager">
+      <button class="pg" disabled>← Назад</button>
+      <span><span class="mono">1–34</span> из <span class="mono">34</span></span>
+      <button class="pg" disabled>Дальше →</button>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span><b>Прототип</b> · enterprise · 3/6</span>
+  <a href="01-poisk-lidov.html">← Поиск</a>
+  <a href="02-rezultaty-poiska.html">Результаты →</a>
+  <a href="../index.html">Все 6 дизайнов</a>
+</footer>
+
+<script>
+function mr(b){b.classList.toggle('on')}
+function sg(b){b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+</script>
+</body>
+</html>

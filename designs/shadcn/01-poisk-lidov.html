@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Поиск — SpinLid · shadcn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ————— shadcn: цинк, чёрный primary, ring-фокус ————— */
+:root{
+  --bg:#FFFFFF; --muted:#FAFAFA; --muted-2:#F4F4F5; --card:#FFFFFF;
+  --border:#E4E4E7; --input:#E4E4E7;
+  --fg:#09090B; --muted-fg:#71717A; --faint:#A1A1AA;
+  --primary:#18181B; --primary-fg:#FAFAFA;
+  --accent:#F4F4F5; --ring:#18181B2E;
+  --good:#16A34A; --warn:#D97706; --bad:#DC2626; --info:#2563EB;
+  --r:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:#E4E4E7}
+body{font-family:'Inter Tight','Segoe UI',sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #18181B66;outline-offset:2px;border-radius:6px}
+.mono{font-family:'Fira Code',monospace;font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* header */
+.hdr{border-bottom:1px solid var(--border);background:var(--bg)}
+.hdr-in{max-width:1120px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;gap:20px}
+.logo{font-weight:700;font-size:15px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.logo .sq{width:22px;height:22px;border-radius:6px;background:var(--primary);color:var(--primary-fg);display:grid;place-items:center;font-size:11px;font-weight:700}
+.tabs{display:flex;gap:2px;height:56px;margin-left:8px}
+.tabs a{display:flex;align-items:center;padding:0 14px;font-size:14px;color:var(--muted-fg);border-bottom:2px solid transparent;font-weight:500}
+.tabs a:hover{color:var(--fg)}
+.tabs a[aria-current]{color:var(--fg);font-weight:600;border-bottom-color:var(--fg)}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted-fg)}
+.badge{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:99px;padding:2px 9px;font-size:12px;font-weight:500;color:var(--muted-fg);background:var(--muted)}
+
+main{max-width:1120px;margin:0 auto;padding:48px 24px 96px}
+
+/* hero-блок */
+.hero{max-width:640px}
+.hero h1{font-size:30px;font-weight:700;letter-spacing:-.03em;line-height:1.15}
+.hero p{margin-top:12px;color:var(--muted-fg);font-size:15px;max-width:56ch}
+.hero p b{color:var(--fg);font-weight:600}
+
+/* форма-карточка */
+.card{margin-top:32px;border:1px solid var(--border);border-radius:12px;background:var(--card);box-shadow:0 1px 2px #0000000D}
+.card-h{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-h h2{font-size:15px;font-weight:600}
+.card-h .hint{font-size:13px;color:var(--muted-fg)}
+.card-b{padding:20px;display:flex;flex-direction:column;gap:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.fl label{display:block;font-size:13px;font-weight:500;margin-bottom:7px}
+.inp{width:100%;height:38px;padding:0 12px;background:var(--bg);border:1px solid var(--input);border-radius:var(--r);font-size:14px;transition:border-color .12s, box-shadow .12s}
+.inp::placeholder{color:var(--faint)}
+.inp:focus{outline:none;border-color:#18181B;box-shadow:0 0 0 3px var(--ring)}
+.note{font-size:12.5px;color:var(--faint);margin-top:6px}
+.hintchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.hintchips button{font-size:12.5px;color:var(--muted-fg);border:1px solid var(--border);border-radius:99px;padding:3px 11px;background:var(--muted)}
+.hintchips button:hover{background:var(--muted-2);color:var(--fg)}
+
+/* переключатели источников — как shadcn-checkbox */
+.srcrow{display:flex;flex-wrap:wrap;gap:14px;padding-top:4px}
+.src{display:flex;align-items:flex-start;gap:9px;text-align:left;padding:4px 2px;min-height:36px}
+.src .box{width:16px;height:16px;border:1px solid var(--input);border-radius:4px;display:grid;place-items:center;color:transparent;margin-top:2px;transition:.12s;flex-shrink:0}
+.src.on .box{background:var(--primary);border-color:var(--primary);color:var(--primary-fg)}
+.src b{display:block;font-size:14px;font-weight:500}
+.src small{font-size:12px;color:var(--faint)}
+.src.on b{font-weight:600}
+
+/* кнопки */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 18px;border-radius:var(--r);font-size:14px;font-weight:500;border:1px solid transparent;transition:.12s}
+.btn-primary{background:var(--primary);color:var(--primary-fg)}
+.btn-primary:hover{background:#27272A}
+.btn-outline{border-color:var(--border);background:var(--bg)}
+.btn-outline:hover{background:var(--muted)}
+.btn-lg{height:42px;padding:0 22px;font-weight:600}
+.cta-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:4px}
+.cta-meta{font-size:13px;color:var(--muted-fg)}
+.cta-meta .mono{font-weight:500;color:var(--fg)}
+
+/* разделитель-заголовок */
+.sect{display:flex;align-items:center;gap:14px;margin:40px 0 14px}
+.sect h2{font-size:14px;font-weight:600;white-space:nowrap}
+.sect .ln{flex:1;border-top:1px solid var(--border)}
+.sect span{font-size:13px;color:var(--faint)}
+
+/* быстрые пресеты — компактные строки-кнопки */
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:820px){.quick{grid-template-columns:1fr 1fr}}
+.qbtn{border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;text-align:left;transition:.12s;background:var(--bg)}
+.qbtn:hover{background:var(--muted);border-color:var(--faint)}
+.qbtn small{display:block;font-size:11px;color:var(--faint);letter-spacing:.04em}
+.qbtn b{display:block;font-size:14px;font-weight:600;margin:2px 0}
+.qbtn span{font-size:12.5px;color:var(--muted-fg)}
+
+/* мои пресеты */
+.mypr{display:flex;flex-wrap:wrap;gap:8px}
+.pchip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--muted);border-radius:var(--r);padding:6px 12px;font-size:13px;font-weight:500}
+.pchip:hover{background:var(--muted-2)}
+.pchip .ai{font-size:10.5px;color:var(--info);border:1px solid #DBEAFE;background:#EFF6FF;border-radius:4px;padding:0 5px;font-weight:600}
+.pchip.add{border-style:dashed;color:var(--muted-fg);background:var(--bg)}
+
+/* тонкая настройка — accordion */
+details.acc{border:1px solid var(--border);border-radius:12px;background:var(--card)}
+details.acc>summary{list-style:none;padding:14px 20px;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;cursor:pointer;user-select:none}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary .chev{margin-left:auto;color:var(--faint);transition:transform .15s}
+details.acc[open]>summary{border-bottom:1px solid var(--border)}
+details.acc[open]>summary .chev{transform:rotate(180deg)}
+.acc-b{padding:20px;display:flex;flex-direction:column;gap:20px}
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:720px){.acc-grid{grid-template-columns:1fr}}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:var(--r);padding:3px;gap:2px;background:var(--muted);margin-bottom:14px}
+.seg button{padding:6px 14px;border-radius:6px;font-size:13.5px;font-weight:500;color:var(--muted-fg)}
+.seg button.on{background:var(--bg);color:var(--fg);font-weight:600;box-shadow:0 1px 2px #00000012}
+.seg .new{font-size:10px;color:var(--info);margin-left:4px}
+.rad{display:none;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.rad.show{display:flex}
+.rad .inp{flex:1;min-width:180px}
+.rad input[type=range]{accent-color:#18181B;width:150px}
+.rad .val{font-family:'Fira Code',monospace;font-size:13px}
+.wtoggle{display:flex;gap:8px;margin-bottom:8px}
+.wtoggle button{font-size:12.5px;font-weight:500;padding:5px 13px;border-radius:99px;border:1px solid var(--border);color:var(--muted-fg);background:var(--bg)}
+.wtoggle button.on{border-color:var(--bad);color:var(--bad);background:#FEF2F2}
+.callout{grid-column:1/-1;display:flex;gap:10px;background:var(--muted);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13.5px;color:var(--muted-fg)}
+.callout b{color:var(--fg);font-weight:600}
+
+.foot{max-width:1120px;margin:0 auto;padding:0 24px 40px;display:flex;gap:18px;font-size:13px;color:var(--faint)}
+.foot a{color:var(--muted-fg);font-weight:500}
+.foot a:hover{color:var(--fg)}
+.foot b{color:var(--muted-fg)}
+.ic{width:15px;height:15px}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="#"><span class="sq">S</span>SpinLid</a>
+    <nav class="tabs" aria-label="Разделы">
+      <a href="#" aria-current="page">Поиск</a>
+      <a href="03-poisk-po-boli.html">По боли</a>
+      <a href="#">История</a>
+      <a href="#">Списки</a>
+    </nav>
+    <div class="hdr-right"><span class="badge">Дизайн 1/6 · shadcn</span></div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Кому писать первым — подскажут отзывы их клиентов</h1>
+    <p>Укажите нишу и город. SpinLid соберёт компании с 2GIS, Яндекс.Карт и Google Карт, прочитает отзывы и покажет, <b>на что жалуются клиенты каждой компании</b> — с цитатой и контактом.</p>
+  </section>
+
+  <section class="card" aria-label="Параметры поиска">
+    <div class="card-h">
+      <h2>Новый поиск</h2>
+      <span class="hint">1 поиск · обычно 50–300 компаний</span>
+    </div>
+    <div class="card-b">
+      <div class="grid2">
+        <div class="fl">
+          <label for="niche">Ниша или вид бизнеса</label>
+          <input class="inp" id="niche" list="niches" value="Стоматология" placeholder="Например: стоматология">
+          <datalist id="niches"><option value="Стоматология"><option value="Автосервис"><option value="Фитнес-клуб"><option value="Ветклиника"></datalist>
+          <div class="hintchips">
+            <button type="button" onclick="sv('niche',this)">стоматология</button>
+            <button type="button" onclick="sv('niche',this)">автосервис</button>
+            <button type="button" onclick="sv('niche',this)">фитнес-клуб</button>
+          </div>
+        </div>
+        <div class="fl">
+          <label for="city">Город</label>
+          <input class="inp" id="city" list="cities" value="Москва" placeholder="Например: Москва">
+          <datalist id="cities"><option value="Москва"><option value="Санкт-Петербург"><option value="Казань"><option value="Балашиха"></datalist>
+          <p class="note">Москва + 12 городов Подмосковья одним поиском</p>
+        </div>
+      </div>
+
+      <div class="fl">
+        <label>Источники отзывов</label>
+        <div class="srcrow">
+          <button class="src on" type="button" onclick="tg(this)"><span class="box">✓</span><span><b>2GIS</b><small>основной · нужен ключ</small></span></button>
+          <button class="src on" type="button" onclick="tg(this)"><span class="box">✓</span><span><b>Яндекс.Карты</b><small>бесплатно</small></span></button>
+          <button class="src" type="button" onclick="tg(this)"><span class="box">✓</span><span><b>Google Maps</b><small>через SerpAPI · платно</small></span></button>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn btn-primary btn-lg" onclick="location.href='02-rezultaty-poiska.html'">Найти компании</button>
+        <span class="cta-meta">Готово через <span class="mono">2–5 мин</span> · сразу с болями и цитатами</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="sect"><h2>Быстрый старт</h2><span class="ln"></span><span>не знаете, что ввести?</span></div>
+  <div class="quick">
+    <button class="qbtn" onclick="location.href='02-rezultaty-poiska.html'"><small>МОСКВА</small><b>Стоматологии</b><span>~280 · жалобы на запись</span></button>
+    <button class="qbtn" onclick="location.href='02-rezultaty-poiska.html'"><small>САНКТ-ПЕТЕРБУРГ</small><b>Автосервисы</b><span>~340 · сроки и доп. работы</span></button>
+    <button class="qbtn" onclick="location.href='02-rezultaty-poiska.html'"><small>МОСКВА</small><b>Фитнес-клубы</b><span>~190 · возвраты денег</span></button>
+    <button class="qbtn" onclick="location.href='02-rezultaty-poiska.html'"><small>КАЗАНЬ</small><b>Рестораны</b><span>~260 · долгая подача</span></button>
+  </div>
+
+  <div class="sect"><h2>Мои пресеты</h2><span class="ln"></span></div>
+  <div class="mypr">
+    <button class="pchip">Клиники с негативом <span class="ai">AI</span></button>
+    <button class="pchip">Без сайта · Москва</button>
+    <button class="pchip">Стоматология · область</button>
+    <button class="pchip add">＋ Сохранить текущие</button>
+  </div>
+
+  <div class="sect"><h2>Тонкая настройка</h2><span class="ln"></span></div>
+  <details class="acc">
+    <summary>Радиус, слова в отзывах, массовый прогон
+      <svg class="ic chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </summary>
+    <div class="acc-b">
+      <div class="acc-grid">
+        <div>
+          <div class="seg" role="group" aria-label="Режим">
+            <button class="on" type="button" onclick="md(this,'city')">По городу</button>
+            <button type="button" onclick="md(this,'radius')">В радиусе от адреса<span class="new">NEW</span></button>
+          </div>
+          <div class="rad" id="rad">
+            <input class="inp" type="text" placeholder="Адрес: ул. Ленина, 12" aria-label="Адрес центра">
+            <input type="range" min="0.5" max="10" step="0.5" value="3" oninput="this.nextElementSibling.textContent=this.value+' км'" aria-label="Радиус">
+            <span class="val">3 км</span>
+          </div>
+          <div class="fl">
+            <label for="mn">Ещё ниши — через запятую</label>
+            <input class="inp" id="mn" type="text" placeholder="стоматология, имплантация">
+          </div>
+          <div class="fl" style="margin-top:14px">
+            <label for="mc">Ещё города</label>
+            <input class="inp" id="mc" type="text" placeholder="Москва, Балашиха, Мытищи">
+          </div>
+        </div>
+        <div class="fl">
+          <label>Слова в отзывах</label>
+          <div class="wtoggle">
+            <button class="on" type="button" onclick="wm(this)">Содержит</button>
+            <button type="button" onclick="wm(this)">Не содержит</button>
+          </div>
+          <input class="inp" type="text" placeholder="не дозвонился, не перезвонили" aria-label="Слова в отзывах">
+          <p class="note" style="margin-top:12px">Показать компании, в чьих отзывах встречаются эти слова</p>
+        </div>
+      </div>
+      <p class="callout"><b>Фильтры по рейтингу, обороту, ЛПР и сайту</b> — на странице результатов: применяются к найденным компаниям без нового поиска.</p>
+    </div>
+  </details>
+</main>
+
+<footer class="foot">
+  <span><b>Прототип</b> · shadcn · 1/6</span>
+  <a href="02-rezultaty-poiska.html">Результаты →</a>
+  <a href="03-poisk-po-boli.html">По боли →</a>
+  <a href="../index.html">Все 6 дизайнов</a>
+</footer>
+
+<script>
+function sv(id,b){document.getElementById(id).value=b.textContent}
+function tg(b){b.classList.toggle('on')}
+function wm(b){b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+function md(btn,m){btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.getElementById('rad').classList.toggle('show',m==='radius')}
+</script>
+</body>
+</html>

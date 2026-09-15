@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Результаты · shadcn · SpinLid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --muted:#FAFAFA; --muted-2:#F4F4F5;
+  --border:#E4E4E7; --fg:#09090B; --muted-fg:#71717A; --faint:#A1A1AA;
+  --primary:#18181B; --primary-fg:#FAFAFA; --ring:#18181B2E;
+  --good:#16A34A; --warn:#D97706; --bad:#DC2626; --info:#2563EB;
+  --r:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:#E4E4E7}
+body{font-family:'Inter Tight','Segoe UI',sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #18181B66;outline-offset:2px;border-radius:6px}
+.mono{font-family:'Fira Code',monospace;font-variant-numeric:tabular-nums;font-size:.92em}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.hdr{border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:30}
+.hdr-in{max-width:1280px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;gap:20px}
+.logo{font-weight:700;font-size:15px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.logo .sq{width:22px;height:22px;border-radius:6px;background:var(--primary);color:var(--primary-fg);display:grid;place-items:center;font-size:11px;font-weight:700}
+.tabs{display:flex;gap:2px;height:56px;margin-left:8px}
+.tabs a{display:flex;align-items:center;padding:0 14px;font-size:14px;color:var(--muted-fg);border-bottom:2px solid transparent;font-weight:500}
+.tabs a:hover{color:var(--fg)}
+.tabs a[aria-current]{color:var(--fg);font-weight:600;border-bottom-color:var(--fg)}
+.hdr-right{margin-left:auto;display:flex;gap:10px}
+.badge{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:99px;padding:2px 9px;font-size:12px;font-weight:500;color:var(--muted-fg);background:var(--muted)}
+
+main{max-width:1280px;margin:0 auto;padding:24px 24px 120px}
+
+/* статусная строка */
+.stat{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.stat h1{font-size:20px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.stat .sub{margin-top:4px;font-size:13.5px;color:var(--muted-fg);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.stat .sub .mono{color:var(--fg);font-weight:500}
+.stat .actions{margin-left:auto;display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 15px;border-radius:var(--r);font-size:13.5px;font-weight:500;border:1px solid transparent;transition:.12s}
+.btn-primary{background:var(--primary);color:var(--primary-fg)}
+.btn-primary:hover{background:#27272A}
+.btn-outline{border-color:var(--border);background:var(--bg)}
+.btn-outline:hover{background:var(--muted)}
+.ic{width:14px;height:14px}
+
+/* прогресс */
+.parse{display:flex;align-items:center;gap:12px;margin-top:14px;font-size:13px;color:var(--muted-fg)}
+.parse b{color:var(--fg);font-weight:600}
+.track{flex:1;min-width:140px;height:6px;border-radius:99px;background:var(--muted-2);overflow:hidden}
+.fill{height:100%;width:68%;background:var(--primary);border-radius:99px}
+.pct{font-family:'Fira Code',monospace;font-size:12.5px;font-weight:600;color:var(--fg)}
+
+/* применённые фильтры */
+.tokens{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0}
+.tokens .tl{font-size:12.5px;color:var(--faint);font-weight:500}
+.tok{display:inline-flex;align-items:center;gap:7px;background:var(--muted);border:1px solid var(--border);border-radius:99px;padding:3px 5px 3px 11px;font-size:13px;font-weight:500}
+.tok button{width:18px;height:18px;border-radius:99px;display:grid;place-items:center;color:var(--muted-fg)}
+.tok button:hover{background:var(--muted-2);color:var(--bad)}
+.tok-x{font-size:13px;color:var(--bad);font-weight:500;padding:3px 9px}
+
+/* раскладка */
+.cols{display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start;margin-top:8px}
+@media(max-width:1020px){.cols{grid-template-columns:1fr}}
+
+/* фильтры */
+.filters{border:1px solid var(--border);border-radius:12px;background:var(--bg);position:sticky;top:72px;overflow:hidden}
+.f-h{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.f-h h2{font-size:14px;font-weight:600}
+.f-reset{font-size:12.5px;color:var(--bad);font-weight:500}
+.f-sub{padding:10px 16px;font-size:12.5px;color:var(--faint);border-bottom:1px solid var(--border);background:var(--muted)}
+details.f-sec{border-bottom:1px solid var(--border)}
+details.f-sec:last-child{border-bottom:none}
+details.f-sec>summary{list-style:none;display:flex;align-items:center;gap:8px;padding:11px 16px;font-size:13px;font-weight:500;cursor:pointer;user-select:none}
+details.f-sec>summary::-webkit-details-marker{display:none}
+details.f-sec>summary .chev{margin-left:auto;color:var(--faint);transition:transform .15s}
+details.f-sec[open]>summary .chev{transform:rotate(180deg)}
+.f-b{padding:4px 16px 14px;display:flex;flex-direction:column;gap:11px}
+.fl{font-size:12.5px;color:var(--muted-fg);font-weight:500;display:block}
+.f-in{width:100%;height:34px;padding:0 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);font-size:13.5px}
+.f-in:focus{outline:none;border-color:#18181B;box-shadow:0 0 0 3px var(--ring)}
+select.f-in{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2371717A' fill='none' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px}
+.pair{display:grid;grid-template-columns:1fr 12px 1fr;gap:6px;align-items:center}
+.pair .d{text-align:center;color:var(--faint)}
+.scn{display:flex;flex-direction:column;gap:1px}
+.scn button{display:flex;align-items:center;gap:9px;font-size:13px;padding:7px 8px;border-radius:6px;color:var(--muted-fg);text-align:left;min-height:34px}
+.scn button:hover{background:var(--muted);color:var(--fg)}
+.scn button.on{background:var(--muted);color:var(--fg);font-weight:600}
+.scn .mk{width:15px;height:15px;border:1px solid var(--border);border-radius:4px;display:grid;place-items:center;font-size:9px;color:transparent;flex-shrink:0}
+.scn button.on .mk{background:var(--primary);border-color:var(--primary);color:var(--primary-fg)}
+.scn .hit{margin-left:auto;font-family:'Fira Code',monospace;font-size:11.5px;color:var(--faint)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12.5px;font-weight:500;color:var(--muted-fg);border:1px solid var(--border);border-radius:99px;padding:4px 11px;background:var(--bg);transition:.1s}
+.chip:hover{background:var(--muted)}
+.chip.on{background:var(--primary);border-color:var(--primary);color:var(--primary-fg)}
+.chip.dashed{border-style:dashed;color:var(--faint)}
+
+/* таблица результатов */
+.tbl-bar{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:var(--r);padding:3px;gap:2px;background:var(--muted)}
+.seg button{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:6px;font-size:13px;font-weight:500;color:var(--muted-fg)}
+.seg button.on{background:var(--bg);color:var(--fg);font-weight:600;box-shadow:0 1px 2px #00000012}
+.showing{font-size:13px;color:var(--muted-fg)}
+.showing .mono{color:var(--fg);font-weight:500}
+.sortw{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted-fg)}
+.sortw select{width:auto;min-width:210px;height:34px}
+
+.tablewrap{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{background:var(--muted);border-bottom:1px solid var(--border);padding:9px 14px;text-align:left;font-size:12.5px;font-weight:500;color:var(--muted-fg);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--muted)}
+tbody tr.sel{background:#F4F4F580}
+td{padding:12px 14px;vertical-align:top}
+td.pk{width:36px;padding-top:14px}
+td.pk input{width:15px;height:15px;accent-color:#18181B;cursor:pointer}
+.co b{font-size:14px;font-weight:600;display:block}
+.co .ad{font-size:12px;color:var(--faint)}
+.rt{white-space:nowrap}
+.rt .v{font-family:'Fira Code',monospace;font-weight:600;font-size:13.5px}
+.rt .v.low{color:var(--bad)}.rt .v.mid{color:var(--warn)}.rt .v.high{color:var(--good)}
+.rt small{color:var(--faint);font-size:11.5px;display:block}
+.ptags{display:flex;flex-wrap:wrap;gap:5px;max-width:340px}
+.pt{display:inline-flex;gap:5px;font-size:11.5px;font-weight:500;color:#991B1B;background:#FEF2F2;border:1px solid #FECACA;border-radius:99px;padding:1px 9px;white-space:nowrap}
+.pt .n{color:#B91C1C99}
+.qt{color:var(--muted-fg);font-size:13px;max-width:38ch;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.flgs{display:flex;flex-wrap:wrap;gap:4px}
+.fb{display:inline-flex;font-size:11px;font-weight:500;border-radius:5px;padding:1px 7px;border:1px solid transparent}
+.fb.bad{color:var(--bad);background:#FEF2F2;border-color:#FECACA}
+.fb.warn{color:var(--warn);background:#FFFBEB;border-color:#FDE68A}
+.fb.good{color:var(--good);background:#F0FDF4;border-color:#BBF7D0}
+.fb.mut{color:var(--muted-fg);background:var(--muted);border-color:var(--border)}
+.ct .ph{font-family:'Fira Code',monospace;font-size:12.5px;font-weight:500;white-space:nowrap}
+.ct .wb{font-size:12px;color:var(--info)}
+.ct .wb.none{color:var(--warn);font-weight:500}
+.rowact{display:flex;gap:6px;margin-top:7px}
+.mini{font-size:12px;font-weight:500;padding:5px 10px;border-radius:6px;border:1px solid var(--border);color:var(--muted-fg)}
+.mini:hover{background:var(--muted);color:var(--fg)}
+.mini.solid{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.mini.solid:hover{background:#27272A}
+
+.tbl-foot{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 0 0;font-size:13px;color:var(--muted-fg)}
+.pg{border:1px solid var(--border);border-radius:var(--r);padding:7px 14px;font-weight:500;color:var(--muted-fg)}
+.pg:hover:not(:disabled){background:var(--muted);color:var(--fg)}
+.pg:disabled{opacity:.4;cursor:default}
+.range-note{text-align:center;font-size:13px;color:var(--faint);padding:14px}
+.range-note button{color:var(--fg);font-weight:500;text-decoration:underline;text-underline-offset:3px}
+
+/* плавающая панель выбора */
+.bulk{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(6px);z-index:40;display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:7px 8px 7px 14px;box-shadow:0 8px 24px -8px #0000002E, 0 2px 6px #00000012;opacity:0;pointer-events:none;transition:.15s;max-width:calc(100vw - 32px);flex-wrap:wrap}
+.bulk.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.bulk .bn{font-size:13.5px;font-weight:600;padding-right:10px;margin-right:4px;border-right:1px solid var(--border);white-space:nowrap}
+.bbtn{font-size:13px;font-weight:500;padding:7px 11px;border-radius:7px;color:var(--muted-fg)}
+.bbtn:hover{background:var(--muted);color:var(--fg)}
+.bx{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;color:var(--muted-fg)}
+.bx:hover{background:var(--muted);color:var(--fg)}
+
+.foot{max-width:1280px;margin:36px auto 0;padding:0 24px 40px;display:flex;gap:18px;font-size:13px;color:var(--faint)}
+.foot a{color:var(--muted-fg);font-weight:500}
+.foot a:hover{color:var(--fg)}
+.foot b{color:var(--muted-fg)}
+@media(max-width:900px){.tablewrap{overflow-x:auto}table{min-width:980px}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="01-poisk-lidov.html"><span class="sq">S</span>SpinLid</a>
+    <nav class="tabs" aria-label="Разделы">
+      <a href="01-poisk-lidov.html" aria-current="page">Поиск</a>
+      <a href="03-poisk-po-boli.html">По боли</a>
+      <a href="#">История</a>
+      <a href="#">Списки</a>
+    </nav>
+    <div class="hdr-right"><span class="badge">Дизайн 1/6 · shadcn</span></div>
+  </div>
+</header>
+
+<main>
+  <div class="stat">
+    <div>
+      <h1>Стоматологии · Москва <span class="badge">⚡ из кэша</span></h1>
+      <div class="sub">
+        <span>Найдено <span class="mono">234</span></span>
+        <span>под фильтры <span class="mono">87</span></span>
+        <span>2GIS + Яндекс.Карты</span>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-outline">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16"/></svg>
+        Экспорт
+      </button>
+      <button class="btn btn-primary" onclick="location.href='#'">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 3L11 14M22 3l-7 19-4-8-8-4 19-7z"/></svg>
+        Сформировать КП
+      </button>
+    </div>
+  </div>
+
+  <div class="parse">
+    <span><b>Идёт сбор:</b> Яндекс.Карты · компания <span class="mono">159</span>/<span class="mono">234</span></span>
+    <span class="track" role="progressbar" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс"><span class="fill"></span></span>
+    <span class="pct">68%</span>
+  </div>
+
+  <div class="tokens" id="tokens">
+    <span class="tl">Фильтры:</span>
+    <span class="tok">Рейтинг до 4.2 <button onclick="rt(this)" aria-label="Убрать"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span>
+    <span class="tok">Негативных от 3 <button onclick="rt(this)" aria-label="Убрать"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span>
+    <span class="tok">Только без сайта <button onclick="rt(this)" aria-label="Убрать"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span>
+    <span class="tok">Боль: «долгое ожидание» <button onclick="rt(this)" aria-label="Убрать"><svg class="ic" style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span>
+    <button class="tok-x" onclick="document.querySelectorAll('#tokens .tok').forEach(t=>t.remove())">Сбросить всё</button>
+  </div>
+
+  <div class="cols">
+    <aside class="filters" aria-label="Фильтры">
+      <div class="f-h"><h2>Фильтры</h2><button class="f-reset">Сбросить</button></div>
+      <p class="f-sub">К найденным 234 компаниям — сразу, без нового поиска</p>
+
+      <details class="f-sec" open>
+        <summary>Готовые сценарии <svg class="ic chev" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="f-b"><div class="scn">
+          <button class="on"><span class="mk">✓</span>Много негатива<span class="hit">37</span></button>
+          <button><span class="mk">✓</span>Нет сайта — продать сайт<span class="hit">21</span></button>
+          <button><span class="mk">✓</span>Платёжеспособные<span class="hit">17</span></button>
+          <button><span class="mk">✓</span>Не дозвониться — продать запись<span class="hit">12</span></button>
+          <button><span class="mk">✓</span>Ищут маркетолога · hh.ru<span class="hit">5</span></button>
+          <button><span class="mk">✓</span>Есть ЛПР<span class="hit">29</span></button>
+          <button><span class="mk">✓</span>AI: готовность купить<span class="hit">—</span></button>
+        </div></div>
+      </details>
+
+      <details class="f-sec" open>
+        <summary>Рейтинг и отзывы <svg class="ic chev" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="f-b">
+          <div><span class="fl">Рейтинг 0–5</span>
+            <div class="pair" style="margin-top:5px">
+              <input class="f-in" type="number" step="0.1" placeholder="от" aria-label="от">
+              <span class="d">—</span>
+              <input class="f-in" type="number" step="0.1" value="4.2" aria-label="до">
+            </div>
+          </div>
+          <div class="pair">
+            <div><span class="fl" style="margin-bottom:5px">Отзывов от</span><input class="f-in" type="number" placeholder="10"></div>
+            <span class="d"></span>
+            <div><span class="fl" style="margin-bottom:5px">Негативных от</span><input class="f-in" type="number" value="3"></div>
+          </div>
+          <div><span class="fl" style="margin-bottom:5px">Ответы владельца</span>
+            <select class="f-in"><option>Не важно</option><option>Только с ответами</option><option>Только без ответов</option></select></div>
+        </div>
+      </details>
+
+      <details class="f-sec">
+        <summary>Сайт и контакты <svg class="ic chev" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="f-b">
+          <div><span class="fl" style="margin-bottom:5px">Свой сайт</span><select class="f-in"><option>Не важно</option><option selected>Только без сайта</option><option>Только с сайтом</option></select></div>
+          <div><span class="fl" style="margin-bottom:5px">ЛПР</span><select class="f-in"><option>Не важно</option><option>Только с ЛПР</option><option>Только без ЛПР</option></select></div>
+          <div><span class="fl" style="margin-bottom:5px">Ищут маркетолога на hh.ru</span><select class="f-in"><option>Не важно</option><option>Только те, кто ищет</option><option>Не ищут</option></select></div>
+        </div>
+      </details>
+
+      <details class="f-sec">
+        <summary>Деньги и юр. данные <svg class="ic chev" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="f-b">
+          <div class="pair">
+            <div><span class="fl" style="margin-bottom:5px">Оборот от, ₽</span><input class="f-in" type="number" placeholder="1 000 000"></div>
+            <span class="d"></span>
+            <div><span class="fl" style="margin-bottom:5px">Возраст от, лет</span><input class="f-in" type="number" placeholder="3"></div>
+          </div>
+          <div><span class="fl" style="margin-bottom:5px">Тип юр. лица</span>
+            <div class="chips"><button class="chip on">ООО</button><button class="chip">ИП</button><button class="chip">АО</button><button class="chip">ПАО</button><button class="chip">нет данных</button></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="f-sec">
+        <summary>Слова в отзывах <svg class="ic chev" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="f-b">
+          <div><span class="fl" style="margin-bottom:5px">Содержит</span><input class="f-in" placeholder="не дозвонился, потеряли"></div>
+          <div><span class="fl" style="margin-bottom:5px">Не содержит</span><input class="f-in" placeholder="рекомендую"></div>
+        </div>
+      </details>
+
+      <details class="f-sec">
+        <summary>Боли клиентов <svg class="ic chev" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="f-b"><div class="chips">
+          <button class="chip on">Долгое ожидание <span class="mono">×12</span></button>
+          <button class="chip">Грубят на ресепшене ×5</button>
+          <button class="chip">Не перезванивают ×3</button>
+          <button class="chip">Непрозрачные цены ×8</button>
+          <button class="chip">Долгая запись ×4</button>
+          <button class="chip">Очереди ×7</button>
+          <button class="chip dashed">+ ещё 14</button>
+        </div></div>
+      </details>
+
+      <details class="f-sec">
+        <summary>Источник <svg class="ic chev" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="f-b"><div class="chips">
+          <button class="chip on">Все · 234</button><button class="chip">2GIS · 161</button><button class="chip">Я.Карты · 118</button><button class="chip">Google · 43</button>
+        </div></div>
+      </details>
+
+      <div class="f-b" style="padding-top:13px">
+        <div><span class="fl" style="margin-bottom:5px">Сортировка</span>
+          <select class="f-in">
+            <option>Готовность купить — сверху</option><option>Больше негатива</option><option>Рейтинг: худшие сверху</option>
+            <option>Рейтинг: лучшие сверху</option><option>Больше отзывов</option><option>Больше упоминаний болей</option>
+          </select>
+        </div>
+        <button class="chip dashed" style="align-self:flex-start">Сохранить как пресет</button>
+      </div>
+    </aside>
+
+    <section aria-label="Компании">
+      <div class="tbl-bar">
+        <div class="seg">
+          <button class="on"><svg class="ic" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Таблица</button>
+          <button><svg class="ic" style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4l7 1 4-1v13l-4 1-7-1-4 1V5l4-1z"/><path d="M9 4v13M16 5v13"/></svg>Карта</button>
+        </div>
+        <span class="showing"><span class="mono">1–50</span> из <span class="mono">87</span></span>
+        <div class="sortw">Сортировать
+          <select class="f-in"><option>Готовность купить</option><option>Больше негатива</option><option>Рейтинг: худшие сверху</option></select>
+        </div>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr>
+            <th style="width:36px"><input type="checkbox" style="accent-color:#18181B" onchange="document.querySelectorAll('.pk input').forEach(c=>{c.checked=this.checked;pk(c,+c.closest('tr').dataset.i)})" aria-label="Выбрать все"></th>
+            <th>Компания</th><th>Рейтинг</th><th>Боли из отзывов</th><th>Цитата</th><th>Признаки</th><th>Контакт</th>
+          </tr></thead>
+          <tbody id="tb"></tbody>
+        </table>
+      </div>
+
+      <p class="range-note">Под фильтры попали 87 из 234 · <button onclick="document.querySelector('.f-reset').click()">показать всех</button></p>
+      <div class="tbl-foot">
+        <button class="pg" disabled>← Назад</button>
+        <span><span class="mono">1–50</span> из <span class="mono">87</span></span>
+        <button class="pg">Дальше →</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="bulk" id="bulk" role="toolbar" aria-label="Выбранные">
+  <span class="bn">Выбрано <span class="mono" id="bulkN">0</span></span>
+  <button class="bbtn">В список</button>
+  <button class="bbtn">КП</button>
+  <button class="bbtn">Найти ЛПР</button>
+  <button class="bbtn">Экспорт</button>
+  <button class="bx" onclick="clearSel()" aria-label="Снять выбор"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+</div>
+
+<footer class="foot">
+  <span><b>Прототип</b> · shadcn · 2/6</span>
+  <a href="01-poisk-lidov.html">← Поиск</a>
+  <a href="03-poisk-po-boli.html">По боли →</a>
+  <a href="../index.html">Все 6 дизайнов</a>
+</footer>
+
+<script>
+const D=[
+ {n:'Стоматология «Улыбка+»',a:'Москва, ул. Ленина 12',r:3.8,rc:142,rs:'low',p:[['Долгое ожидание',12],['Грубят на ресепшене',5]],q:'Записала ребёнка на 10:00, приняли в 11:20 — полтора часа ждать с 4-леткой.',f:[['bad','31 негатив'],['warn','нет сайта'],['good','ЛПР'],['mut','ООО'],['mut','5 лет · 1.2 млн ₽'],['bad','ищет маркетолога']],ph:'+7 495 123-45-67',w:'',s:1},
+ {n:'Клиника «Здоровье»',a:'Москва, Волгоградский 42',r:4.1,rc:89,rs:'mid',p:[['Непрозрачные цены',8],['Долгая запись',4]],q:'На сайте от 1 500 ₽, по факту чек 4 800.',f:[['bad','19 негатив'],['mut','ЛПР: нет данных'],['mut','ООО'],['mut','12 лет · 4.6 млн ₽']],ph:'+7 495 555-12-33',w:'zdorovie-msk.ru',s:1},
+ {n:'Автосервис «Кардан»',a:'Мытищи, Волковское ш. 4',r:3.6,rc:67,rs:'low',p:[['Сорванные сроки',9],['Доп. работы без согласия',6]],q:'Сказали 2 дня — делали 9. Спрашиваешь про сроки — хамят.',f:[['bad','22 негатив'],['warn','нет сайта'],['mut','ИП'],['mut','8 лет · 0.9 млн ₽']],ph:'+7 903 444-66-11',w:'',s:1},
+ {n:'Детская клиника «Радуга»',a:'Москва, ул. Академика 8',r:4.3,rc:156,rs:'high',p:[['Очередь по записи',7]],q:'Записаны на 14:00, провели в 15:30.',f:[['bad','14 негатив'],['good','ЛПР'],['mut','ООО'],['mut','6 лет · 2.8 млн ₽']],ph:'+7 495 200-30-40',w:'raduga-kids.ru',s:0},
+ {n:'Стоматология «Ортодонт-Про»',a:'Балашиха, Советская 30',r:3.9,rc:118,rs:'mid',p:[['Не перезваниваются',11],['Непрозрачные цены',6]],q:'Оставил заявку трижды — ни одного звонка.',f:[['bad','27 негатив'],['warn','нет сайта'],['mut','ООО'],['mut','3 года · 0.7 млн ₽']],ph:'+7 495 340-11-22',w:'',s:0},
+ {n:'Стоматология «Дентал»',a:'Подольск, Революции 21',r:4.5,rc:203,rs:'high',p:[],q:'Жалоб почти нет — обходить фильтром «негатив от 3».',f:[['mut','без негатива'],['mut','ООО'],['mut','9 лет · 5.1 млн ₽']],ph:'+7 495 678-90-12',w:'dental-podolsk.ru',s:0},
+];
+document.getElementById('tb').innerHTML=D.map((c,i)=>`
+<tr class="${c.s?'sel':''}" data-i="${i}">
+ <td class="pk"><input type="checkbox" ${c.s?'checked':''} onchange="pk(this,${i})" aria-label="Выбрать ${c.n}"></td>
+ <td class="co"><b>${c.n}</b><span class="ad">${c.a}</span>
+   <div class="rowact"><button class="mini solid">КП под боль</button><button class="mini">Отзывы</button><button class="mini">Детали</button></div>
+ </td>
+ <td class="rt"><span class="v ${c.rs}">${c.r.toFixed(1)}</span><small>${c.rc} отзывов</small></td>
+ <td><div class="ptags">${c.p.length?c.p.map(x=>`<span class="pt">${x[0]}<span class="n">×${x[1]}</span></span>`).join(''):'<span class="fb mut">боли не найдены</span>'}</div></td>
+ <td class="qt">${c.q}</td>
+ <td><div class="flgs">${c.f.map(x=>`<span class="fb ${x[0]}">${x[1]}</span>`).join('')}</div></td>
+ <td class="ct"><div class="ph">${c.ph}</div>${c.w?`<a class="wb" href="#">${c.w}</a>`:'<span class="wb none">сайта нет</span>'}</td>
+</tr>`).join('');
+
+function updB(){const n=D.filter(c=>c.s).length;document.getElementById('bulkN').textContent=n;document.getElementById('bulk').classList.toggle('show',n>0)}
+function pk(chk,i){D[i].s=chk.checked;chk.closest('tr').classList.toggle('sel',chk.checked);updB()}
+function clearSel(){document.querySelectorAll('.pk input').forEach(c=>{c.checked=false;pk(c,+c.closest('tr').dataset.i)})}
+function rt(b){b.closest('.tok').remove()}
+document.querySelectorAll('.chips .chip:not(.dashed)').forEach(ch=>ch.addEventListener('click',()=>{if(!ch.textContent.includes('ещё'))ch.classList.toggle('on')}));
+document.querySelectorAll('.scn button').forEach(b=>b.addEventListener('click',()=>{const w=b.classList.contains('on');b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));if(!w)b.classList.add('on')}));
+updB();
+</script>
+</body>
+</html>

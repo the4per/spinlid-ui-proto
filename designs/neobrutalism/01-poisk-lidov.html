@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Поиск — SpinLid · neobrutalism</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ————— neobrutalism: 2px рамки, жёсткие тени, жёлтый/фиолетовый ————— */
+:root{
+  --paper:#FBFBF9; --ink:#1C293C;
+  --yellow:#FDC800; --violet:#432DD7; --pink:#F279A8; --mint:#9FE3B8;
+  --good:#16A34A; --warn:#D97706; --bad:#DC2626;
+  --bd:2px solid var(--ink);
+  --sh:4px 4px 0 var(--ink);
+  --r:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:var(--yellow);color:var(--ink)}
+body{font-family:'Montserrat','Segoe UI',sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(#1C293C0F 1px, transparent 1px);background-size:22px 22px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--violet);outline-offset:2px}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* шапка */
+.hdr{border-bottom:var(--bd);background:#fff}
+.hdr-in{max-width:1140px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:18px}
+.logo{font-weight:900;font-size:19px;display:flex;align-items:center;gap:10px;letter-spacing:-.01em}
+.logo .sq{width:32px;height:32px;border:var(--bd);border-radius:var(--r);background:var(--yellow);box-shadow:3px 3px 0 var(--ink);display:grid;place-items:center;font-weight:900}
+.nav{display:flex;gap:8px;margin-left:12px}
+.nav a{font-size:13.5px;font-weight:700;padding:8px 14px;border:var(--bd);border-radius:99px;background:#fff;transition:.1s}
+.nav a:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+.nav a[aria-current]{background:var(--ink);color:#fff}
+.tag{margin-left:auto;border:var(--bd);border-radius:var(--r);background:var(--mint);box-shadow:3px 3px 0 var(--ink);padding:6px 12px;font-size:12px;font-weight:800;transform:rotate(-1.5deg)}
+
+main{max-width:1140px;margin:0 auto;padding:56px 24px 100px}
+
+/* герой */
+.hero h1{font-size:clamp(34px,4.6vw,54px);font-weight:900;line-height:1.05;letter-spacing:-.02em;max-width:760px;text-transform:uppercase}
+.hero h1 .hl{background:var(--yellow);padding:0 10px;box-shadow:3px 3px 0 var(--ink);display:inline-block;transform:rotate(-1deg);border:var(--bd);border-radius:6px}
+.hero p{margin-top:22px;font-size:16.5px;font-weight:500;max-width:60ch;color:#3D4A5C}
+.hero p b{color:var(--ink);font-weight:800}
+
+/* форма-стикер */
+.form{margin-top:40px;background:#fff;border:var(--bd);border-radius:14px;box-shadow:6px 6px 0 var(--ink);padding:26px;position:relative}
+.form::after{content:'1 ПОИСК';position:absolute;top:-14px;right:26px;background:var(--pink);border:var(--bd);border-radius:99px;padding:3px 14px;font-size:11.5px;font-weight:900;letter-spacing:.1em;box-shadow:3px 3px 0 var(--ink);transform:rotate(2deg)}
+.frow{display:grid;grid-template-columns:1.3fr 1fr auto;gap:14px;align-items:end}
+@media(max-width:820px){.frow{grid-template-columns:1fr}}
+.fl label{display:block;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.inp{width:100%;background:#fff;border:var(--bd);border-radius:var(--r);padding:13px 14px;font-size:15px;font-weight:600;box-shadow:none;transition:.1s}
+.inp::placeholder{color:#1C293C66;font-weight:500}
+.inp:focus{outline:none;box-shadow:3px 3px 0 var(--ink);transform:translate(-1px,-1px)}
+.hints{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.hints button{font-size:12.5px;font-weight:700;border:var(--bd);border-radius:99px;padding:4px 13px;background:var(--paper);transition:.1s}
+.hints button:hover{background:var(--yellow);transform:translate(-1px,-1px);box-shadow:2px 2px 0 var(--ink)}
+.note{font-size:12.5px;font-weight:600;color:#3D4A5C99;margin-top:8px}
+
+/* кнопка */
+.btn-go{display:inline-flex;align-items:center;gap:10px;background:var(--yellow);border:var(--bd);border-radius:99px;box-shadow:var(--sh);padding:14px 28px;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.03em;transition:.1s;white-space:nowrap;height:52px}
+.btn-go:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn-go:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.go-meta{font-size:13px;font-weight:600;color:#3D4A5C;margin-top:14px}
+.go-meta .mono{background:#fff;border:var(--bd);border-radius:6px;padding:0 7px;font-weight:700}
+
+/* источники */
+.srcs{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px;padding-top:20px;border-top:2px dashed #1C293C33}
+.src{display:flex;align-items:center;gap:10px;border:var(--bd);border-radius:var(--r);padding:10px 16px;background:#fff;font-weight:700;font-size:14px;transition:.1s}
+.src:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+.src .box{width:20px;height:20px;border:var(--bd);border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:900;color:transparent}
+.src.on{background:var(--mint)}
+.src.on .box{background:var(--ink);color:var(--yellow)}
+.src small{display:block;font-size:11px;font-weight:600;color:#3D4A5C99}
+
+/* секции */
+.sect{margin:52px 0 18px;display:flex;align-items:center;gap:14px}
+.sect h2{font-size:21px;font-weight:900;text-transform:uppercase;letter-spacing:-.01em}
+.sect h2 .n{font-family:'JetBrains Mono',monospace;color:var(--violet);margin-right:8px}
+.sect .ln{flex:1;border-top:var(--bd)}
+.sect span{font-size:12.5px;font-weight:700;color:#3D4A5C99}
+
+/* быстрые старты */
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.quick{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.quick{grid-template-columns:1fr}}
+.qc{background:#fff;border:var(--bd);border-radius:var(--r);box-shadow:var(--sh);padding:16px;text-align:left;transition:.1s}
+.qc:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.qc:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.qc small{font-size:10.5px;font-weight:900;letter-spacing:.12em;color:var(--violet)}
+.qc b{display:block;font-size:16px;font-weight:900;margin:4px 0 3px}
+.qc span{font-size:12.5px;font-weight:600;color:#3D4A5C99}
+.qc:nth-child(2){transform:rotate(.6deg)}
+.qc:nth-child(3){transform:rotate(-.7deg)}
+.qc:nth-child(4){transform:rotate(.4deg)}
+
+/* пресеты */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.pch{display:inline-flex;align-items:center;gap:8px;border:var(--bd);border-radius:99px;padding:8px 17px;background:#fff;font-size:13.5px;font-weight:800;transition:.1s}
+.pch:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+.pch .ai{font-size:10px;font-weight:900;background:var(--violet);color:#fff;border-radius:5px;padding:1px 6px}
+.pch.add{border-style:dashed;box-shadow:none;background:transparent;color:#3D4A5C99;font-weight:700}
+
+/* тонкая настройка */
+details.adv{background:#fff;border:var(--bd);border-radius:14px;box-shadow:var(--sh)}
+details.adv>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:18px 22px;font-weight:900;font-size:15px;text-transform:uppercase;cursor:pointer;user-select:none}
+details.adv>summary::-webkit-details-marker{display:none}
+details.adv>summary .arw{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--violet)}
+.adv-b{padding:6px 22px 24px;border-top:2px dashed #1C293C33;display:flex;flex-direction:column;gap:22px}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:18px}
+@media(max-width:760px){.adv-grid{grid-template-columns:1fr}}
+.seg{display:inline-flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.seg button{border:var(--bd);border-radius:99px;padding:8px 16px;font-size:13px;font-weight:800;background:var(--paper)}
+.seg button.on{background:var(--violet);color:#fff;box-shadow:3px 3px 0 var(--ink);transform:translate(-1px,-1px)}
+.seg .nw{background:var(--yellow);color:var(--ink);border-radius:5px;padding:0 5px;font-size:9.5px;margin-left:5px}
+.rad{display:none;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.rad.show{display:flex}
+.rad input[type=text]{flex:1;min-width:200px}
+.rad input[type=range]{accent-color:var(--violet);width:160px}
+.rad .val{font-family:'JetBrains Mono',monospace;font-weight:700;background:var(--yellow);border:var(--bd);border-radius:6px;padding:2px 9px}
+.wtg{display:flex;gap:8px;margin-bottom:9px}
+.wtg button{border:var(--bd);border-radius:99px;padding:6px 14px;font-size:12.5px;font-weight:800;background:var(--paper)}
+.wtg button.on{background:var(--pink);box-shadow:2px 2px 0 var(--ink)}
+.tip{grid-column:1/-1;display:flex;gap:12px;border:var(--bd);border-radius:var(--r);background:var(--yellow);padding:14px 16px;font-size:14px;font-weight:600}
+.tip b{font-weight:900}
+
+.foot{max-width:1140px;margin:40px auto 0;padding:0 24px 44px;display:flex;gap:20px;flex-wrap:wrap;font-size:13px;font-weight:700;color:#3D4A5C99}
+.foot a{border:var(--bd);border-radius:99px;padding:4px 13px;background:#fff}
+.foot b{color:var(--ink)}
+.ic{width:16px;height:16px}
+</style>
+</head>
+<body>
+
+<header class="hdr"><div class="hdr-in">
+  <a class="logo" href="#"><span class="sq">S</span>SpinLid</a>
+  <nav class="nav" aria-label="Разделы">
+    <a href="#" aria-current="page">Поиск</a>
+    <a href="03-poisk-po-boli.html">По боли</a>
+    <a href="#">История</a>
+    <a href="#">Списки</a>
+  </nav>
+  <span class="tag">ДИЗАЙН 2/6 · NEO</span>
+</div></header>
+
+<main>
+  <section class="hero">
+    <h1>Кому писать первым?<br><span class="hl">Подскажут отзывы</span> их клиентов</h1>
+    <p>Укажите нишу и город. SpinLid соберёт компании с 2GIS, Яндекс.Карт и Google Карт, прочитает отзывы и покажет, <b>на что жалуются клиенты каждой компании</b> — с цитатой и контактом.</p>
+  </section>
+
+  <section class="form" aria-label="Параметры поиска">
+    <div class="frow">
+      <div class="fl">
+        <label for="niche">Ниша или вид бизнеса</label>
+        <input class="inp" id="niche" list="n" value="Стоматология" placeholder="Например: стоматология">
+        <datalist id="n"><option value="Стоматология"><option value="Автосервис"><option value="Фитнес-клуб"><option value="Ветклиника"></datalist>
+        <div class="hints">
+          <button type="button" onclick="sv(this)">стоматология</button>
+          <button type="button" onclick="sv(this)">автосервис</button>
+          <button type="button" onclick="sv(this)">фитнес-клуб</button>
+        </div>
+      </div>
+      <div class="fl">
+        <label for="city">Город</label>
+        <input class="inp" id="city" list="c" value="Москва" placeholder="Например: Москва">
+        <datalist id="c"><option value="Москва"><option value="Санкт-Петербург"><option value="Казань"><option value="Балашиха"></datalist>
+        <p class="note">Москва + 12 городов Подмосковья</p>
+      </div>
+      <div>
+        <button class="btn-go" onclick="location.href='02-rezultaty-poiska.html'">Найти →</button>
+      </div>
+    </div>
+    <p class="go-meta">Обычно <span class="mono">50–300</span> компаний за <span class="mono">2–5 мин</span> — сразу с болями и цитатами</p>
+
+    <div class="srcs" role="group" aria-label="Источники отзывов">
+      <button class="src on" type="button" onclick="tg(this)"><span class="box">✓</span><span>2GIS<small>основной · нужен ключ</small></span></button>
+      <button class="src on" type="button" onclick="tg(this)"><span class="box">✓</span><span>Яндекс.Карты<small>бесплатно</small></span></button>
+      <button class="src" type="button" onclick="tg(this)"><span class="box">✓</span><span>Google Maps<small>через SerpAPI · платно</small></span></button>
+    </div>
+  </section>
+
+  <div class="sect"><h2><span class="n">01</span>Быстрый старт</h2><span class="ln"></span><span>НЕ ЗНАЕТЕ, ЧТО ВВЕСТИ?</span></div>
+  <div class="quick">
+    <button class="qc" onclick="location.href='02-rezultaty-poiska.html'"><small>МОСКВА</small><b>Стоматологии</b><span>~280 · жалобы на запись</span></button>
+    <button class="qc" onclick="location.href='02-rezultaty-poiska.html'"><small>СПБ</small><b>Автосервисы</b><span>~340 · сроки и доп. работы</span></button>
+    <button class="qc" onclick="location.href='02-rezultaty-poiska.html'"><small>МОСКВА</small><b>Фитнес-клубы</b><span>~190 · возвраты денег</span></button>
+    <button class="qc" onclick="location.href='02-rezultaty-poiska.html'"><small>КАЗАНЬ</small><b>Рестораны</b><span>~260 · долгая подача</span></button>
+  </div>
+
+  <div class="sect"><h2><span class="n">02</span>Мои пресеты</h2><span class="ln"></span></div>
+  <div class="chips">
+    <button class="pch">Клиники с негативом <span class="ai">AI</span></button>
+    <button class="pch">Без сайта · Москва</button>
+    <button class="pch">Стоматология · область</button>
+    <button class="pch add">＋ сохранить текущие</button>
+  </div>
+
+  <div class="sect"><h2><span class="n">03</span>Тонкая настройка</h2><span class="ln"></span></div>
+  <details class="adv">
+    <summary>Радиус · слова в отзывах · массовый прогон <span class="arv">[ + ]</span></summary>
+    <div class="adv-b">
+      <div class="adv-grid">
+        <div>
+          <div class="seg" role="group" aria-label="Режим">
+            <button class="on" type="button" onclick="md(this,'city')">По городу</button>
+            <button type="button" onclick="md(this,'radius')">В радиусе от адреса<span class="nw">NEW</span></button>
+          </div>
+          <div class="rad" id="rad">
+            <input class="inp" type="text" placeholder="Адрес: ул. Ленина, 12" aria-label="Адрес центра">
+            <input type="range" min="0.5" max="10" step="0.5" value="3" oninput="this.nextElementSibling.textContent=this.value+' км'" aria-label="Радиус">
+            <span class="val">3 км</span>
+          </div>
+          <div class="fl"><label for="mn">Ещё ниши — через запятую</label><input class="inp" id="mn" placeholder="стоматология, имплантация"></div>
+          <div class="fl" style="margin-top:14px"><label for="mc">Ещё города</label><input class="inp" id="mc" placeholder="Москва, Балашиха, Мытищи"></div>
+        </div>
+        <div class="fl">
+          <label>Слова в отзывах</label>
+          <div class="wtg"><button class="on" type="button" onclick="wm(this)">Содержит</button><button type="button" onclick="wm(this)">Не содержит</button></div>
+          <input class="inp" type="text" placeholder="не дозвонился, не перезвонили" aria-label="Слова в отзывах">
+        </div>
+        <p class="tip"><b>Фильтры по рейтингу, обороту, ЛПР и сайту</b> — на странице результатов: крутите их по уже найденным компаниям, без нового поиска.</p>
+      </div>
+    </div>
+  </details>
+</main>
+
+<footer class="foot">
+  <span><b>Прототип</b> · neobrutalism · 1/6</span>
+  <a href="02-rezultaty-poiska.html">Результаты →</a>
+  <a href="03-poisk-po-boli.html">По боли →</a>
+  <a href="../index.html">Все 6 дизайнов</a>
+</footer>
+
+<script>
+function sv(b){document.getElementById('niche').value=b.textContent}
+function tg(b){b.classList.toggle('on')}
+function wm(b){b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+function md(btn,m){btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.getElementById('rad').classList.toggle('show',m==='radius')}
+</script>
+</body>
+</html>

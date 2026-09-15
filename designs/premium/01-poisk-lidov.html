@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Поиск — SpinLid · premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ————— premium: Apple-полировка, один акцент, пилюли, мягкие тени ————— */
+:root{
+  --bg:#FFFFFF; --gray:#F5F5F7; --gray-2:#E8E8ED;
+  --ink:#1D1D1F; --ink-2:#6E6E73; --ink-3:#AEAEB2;
+  --blue:#3B82F6; --blue-hi:#2563EB; --blue-tint:#EFF6FF;
+  --good:#16A34A; --warn:#D97706; --bad:#DC2626;
+  --shadow:0 8px 24px rgba(0,0,0,.06);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.09);
+  --r:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:var(--blue-tint);color:var(--ink)}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,'Helvetica Neue',sans-serif;
+  background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:8px}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;font-size:.92em}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.72);backdrop-filter:blur(20px) saturate(1.8);border-bottom:1px solid rgba(0,0,0,.06)}
+.nav-in{max-width:1024px;margin:0 auto;padding:0 22px;height:52px;display:flex;align-items:center;gap:26px}
+.nav .brand{font-weight:700;font-size:17px;letter-spacing:-.02em}
+.nav .brand i{font-style:normal;color:var(--blue)}
+.nav .links{display:flex;gap:24px;font-size:13.5px;color:var(--ink-2)}
+.nav .links a:hover{color:var(--ink)}
+.nav .links a[aria-current]{color:var(--ink);font-weight:600}
+.nav .who{margin-left:auto;font-size:12px;color:var(--ink-3)}
+
+main{max-width:1024px;margin:0 auto;padding:72px 22px 120px;text-align:center}
+
+/* анонс-пилюля */
+.pill-in-pill{display:inline-flex;align-items:center;gap:9px;border:1px solid #DBEAFE;background:var(--blue-tint);border-radius:99px;padding:5px 16px 5px 6px;font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:26px}
+.pill-in-pill .chip{background:var(--blue);color:#fff;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:700;letter-spacing:.04em}
+.pill-in-pill svg{width:11px;height:11px}
+
+/* герой */
+h1{font-size:clamp(36px,5.4vw,58px);font-weight:800;letter-spacing:-.035em;line-height:1.05;max-width:760px;margin:0 auto}
+h1 .dim{display:block;color:var(--ink-3);font-weight:700}
+.sub{margin:22px auto 0;font-size:18px;color:var(--ink-2);max-width:56ch;line-height:1.55}
+.sub b{color:var(--ink);font-weight:600}
+
+/* форма-карточка */
+.form{margin:44px auto 0;max-width:720px;background:var(--bg);border:1px solid rgba(0,0,0,.06);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:28px;text-align:left}
+.fgrid{display:grid;grid-template-columns:1.25fr 1fr;gap:14px}
+@media(max-width:620px){.fgrid{grid-template-columns:1fr}}
+.fl label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+.inp{width:100%;background:var(--gray);border:1px solid transparent;border-radius:12px;padding:13px 15px;font-size:15.5px;font-weight:500;transition:.15s}
+.inp::placeholder{color:var(--ink-3);font-weight:400}
+.inp:focus{outline:none;background:#fff;border-color:var(--blue);box-shadow:0 0 0 4px rgba(59,130,246,.15)}
+.note{font-size:12px;color:var(--ink-3);margin-top:7px}
+.hints{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.hints button{font-size:12px;color:var(--ink-2);background:var(--gray);border-radius:99px;padding:4px 12px;transition:.12s}
+.hints button:hover{background:var(--gray-2);color:var(--ink)}
+
+/* источники */
+.srcs{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px;padding-top:18px;border-top:1px solid rgba(0,0,0,.06)}
+.src{display:flex;align-items:center;gap:9px;border:1px solid var(--gray-2);border-radius:99px;padding:8px 15px 8px 10px;font-size:13px;font-weight:600;color:var(--ink-2);transition:.12s;min-height:40px}
+.src:hover{border-color:var(--ink-3)}
+.src .box{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--ink-3);display:grid;place-items:center;font-size:9px;color:transparent;transition:.12s}
+.src.on{border-color:var(--blue);background:var(--blue-tint);color:var(--ink)}
+.src.on .box{background:var(--blue);border-color:var(--blue);color:#fff}
+.src small{font-weight:500;color:var(--ink-3);margin-left:2px}
+
+/* CTA */
+.cta-row{display:flex;align-items:center;gap:18px;margin-top:22px;flex-wrap:wrap}
+.btn-pill{display:inline-flex;align-items:center;gap:9px;background:var(--blue);color:#fff;font-size:15.5px;font-weight:600;border-radius:99px;padding:13px 28px;box-shadow:0 8px 20px -6px rgba(59,130,246,.5);transition:.15s;min-height:48px}
+.btn-pill:hover{background:var(--blue-hi);transform:translateY(-1px)}
+.cta-meta{font-size:13px;color:var(--ink-3)}
+.cta-meta .mono{color:var(--ink-2);font-weight:600}
+
+/* как работает — 3 колонки без карточек */
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:80px;text-align:left}
+@media(max-width:760px){.how{grid-template-columns:1fr;gap:26px}}
+.how .n{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:.06em}
+.how b{display:block;font-size:16px;font-weight:700;margin:8px 0 5px;letter-spacing:-.015em}
+.how p{font-size:13.5px;color:var(--ink-2);line-height:1.55}
+
+/* серая секция быстрых стартов */
+.grayband{margin-top:80px;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);background:var(--gray);padding:56px calc(50vw - 512px)}
+.bb-in{max-width:980px;margin:0 auto}
+.bb-h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.bb-h h2{font-size:26px;font-weight:800;letter-spacing:-.025em}
+.bb-h span{font-size:13.5px;color:var(--ink-2)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+@media(max-width:860px){.quick{grid-template-columns:1fr 1fr}}
+.qc{background:#fff;border-radius:14px;padding:18px;text-align:left;box-shadow:var(--shadow);transition:.18s}
+.qc:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.qc small{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--blue)}
+.qc b{display:block;font-size:15.5px;font-weight:700;margin:4px 0 3px;letter-spacing:-.015em}
+.qc span{font-size:12.5px;color:var(--ink-2)}
+
+/* пресеты */
+.pres{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.pchip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--gray-2);border-radius:99px;padding:9px 17px;font-size:13.5px;font-weight:600;color:var(--ink-2);box-shadow:var(--shadow);transition:.15s}
+.pchip:hover{color:var(--ink);transform:translateY(-1px)}
+.pchip .ai{font-size:10px;font-weight:700;color:#fff;background:var(--blue);border-radius:99px;padding:1px 8px}
+.pchip.add{border-style:dashed;box-shadow:none;background:transparent;color:var(--ink-3)}
+
+/* тонкая настройка */
+details.acc{margin-top:80px;text-align:left}
+details.acc>summary{list-style:none;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;font-size:16px;font-weight:700;letter-spacing:-.015em}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary .tw{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;color:var(--ink-3)}
+details.acc>summary .chev{transition:transform .18s;width:14px;height:14px}
+details.acc[open]>summary .chev{transform:rotate(180deg)}
+.acc-b{margin-top:22px;padding-top:26px;border-top:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;gap:26px}
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px}
+@media(max-width:700px){.acc-grid{grid-template-columns:1fr}}
+.seg{display:inline-flex;background:var(--gray);border-radius:99px;padding:4px;gap:2px;margin-bottom:16px}
+.seg button{padding:8px 18px;border-radius:99px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.seg .nw{font-size:9.5px;color:var(--blue);margin-left:4px;font-weight:700}
+.rad{display:none;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.rad.show{display:flex}
+.rad .inp{flex:1;min-width:200px}
+.rad input[type=range]{accent-color:var(--blue);width:160px}
+.rad .val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--blue-hi)}
+.wtg{display:flex;gap:8px;margin-bottom:9px}
+.wtg button{font-size:12.5px;font-weight:600;padding:6px 15px;border-radius:99px;border:1px solid var(--gray-2);color:var(--ink-2)}
+.wtg button.on{border-color:var(--bad);color:var(--bad);background:#FEF2F2}
+.tip{grid-column:1/-1;display:flex;gap:11px;background:var(--gray);border-radius:14px;padding:15px 17px;font-size:13.5px;color:var(--ink-2);align-items:flex-start}
+.tip b{color:var(--ink);font-weight:600}
+.tip svg{flex-shrink:0;color:var(--blue);margin-top:2px;width:16px;height:16px}
+
+.foot{max-width:1024px;margin:0 auto;padding:44px 22px 48px;display:flex;gap:20px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3);border-top:1px solid rgba(0,0,0,.06)}
+.foot a{color:var(--ink-2);font-weight:500}
+.foot a:hover{color:var(--blue)}
+.foot b{color:var(--ink-2)}
+</style>
+</head>
+<body>
+
+<header class="nav"><div class="nav-in">
+  <a class="brand" href="#">Spin<i>lid</i></a>
+  <nav class="links" aria-label="Разделы">
+    <a href="#" aria-current="page">Поиск</a>
+    <a href="03-poisk-po-boli.html">По боли</a>
+    <a href="#">История</a>
+    <a href="#">Списки</a>
+  </nav>
+  <span class="who">Дизайн 5/6 · Premium</span>
+</div></header>
+
+<main>
+  <span class="pill-in-pill"><span class="chip">NEW</span>Отзывы с трёх карт — 2GIS, Яндекс и Google <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+
+  <h1>Кому писать первым.<span class="dim">Подскажут отзывы их клиентов.</span></h1>
+  <p class="sub">Укажите нишу и город. SpinLid соберёт компании с 2GIS, Яндекс.Карт и Google Карт, прочитает отзывы и покажет, <b>на что жалуются клиенты каждой компании</b> — с цитатой и контактом.</p>
+
+  <section class="form" aria-label="Параметры поиска">
+    <div class="fgrid">
+      <div class="fl">
+        <label for="niche">Ниша или вид бизнеса</label>
+        <input class="inp" id="niche" list="n" value="Стоматология" placeholder="Например: стоматология">
+        <datalist id="n"><option value="Стоматология"><option value="Автосервис"><option value="Фитнес-клуб"><option value="Ветклиника"></datalist>
+        <div class="hints"><button type="button" onclick="sv(this)">стоматология</button><button type="button" onclick="sv(this)">автосервис</button><button type="button" onclick="sv(this)">фитнес-клуб</button></div>
+      </div>
+      <div class="fl">
+        <label for="city">Город</label>
+        <input class="inp" id="city" list="c" value="Москва" placeholder="Например: Москва">
+        <datalist id="c"><option value="Москва"><option value="Санкт-Петербург"><option value="Казань"><option value="Балашиха"></datalist>
+        <p class="note">Москва + 12 городов Подмосковья одним поиском</p>
+      </div>
+    </div>
+
+    <div class="srcs" role="group" aria-label="Источники отзывов">
+      <button class="src on" type="button" onclick="tg(this)"><span class="box">✓</span>2GIS<small>нужен ключ</small></button>
+      <button class="src on" type="button" onclick="tg(this)"><span class="box">✓</span>Яндекс.Карты<small>бесплатно</small></button>
+      <button class="src" type="button" onclick="tg(this)"><span class="box">✓</span>Google Maps<small>SerpAPI · платно</small></button>
+    </div>
+
+    <div class="cta-row">
+      <button class="btn-pill" onclick="location.href='02-rezultaty-poiska.html'">Найти компании
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <p class="cta-meta"><span class="mono">50–300</span> компаний · <span class="mono">2–5 мин</span> · сразу с болями и цитатами</p>
+    </div>
+  </section>
+
+  <div class="how" aria-label="Как это работает">
+    <div><span class="n">01</span><b>Собираем карточки</b><p>Компании с карт: название, адрес, рейтинг, телефон, сайт.</p></div>
+    <div><span class="n">02</span><b>Читаем отзывы</b><p>AI группирует жалобы в боли с числом упоминаний и цитатой.</p></div>
+    <div><span class="n">03</span><b>Готовим письмо</b><p>Черновик КП под конкретную боль — в один клик.</p></div>
+  </div>
+
+  <div class="grayband"><div class="bb-in">
+    <div class="bb-h"><h2>Быстрый старт.</h2><span>не знаете, что ввести — запустите готовый пример</span></div>
+    <div class="quick">
+      <button class="qc" onclick="location.href='02-rezultaty-poiska.html'"><small>МОСКВА</small><b>Стоматологии</b><span>~280 клиник · жалобы на запись</span></button>
+      <button class="qc" onclick="location.href='02-rezultaty-poiska.html'"><small>САНКТ-ПЕТЕРБУРГ</small><b>Автосервисы</b><span>~340 сервисов · сроки и доп. работы</span></button>
+      <button class="qc" onclick="location.href='02-rezultaty-poiska.html'"><small>МОСКВА</small><b>Фитнес-клубы</b><span>~190 клубов · возвраты денег</span></button>
+      <button class="qc" onclick="location.href='02-rezultaty-poiska.html'"><small>КАЗАНЬ</small><b>Рестораны</b><span>~260 точек · долгая подача</span></button>
+    </div>
+    <div class="pres">
+      <button class="pchip">Клиники с негативом <span class="ai">AI</span></button>
+      <button class="pchip">Без сайта · Москва</button>
+      <button class="pchip">Стоматология · область</button>
+      <button class="pchip add">＋ Сохранить текущие</button>
+    </div>
+  </div></div>
+
+  <details class="acc">
+    <summary>Тонкая настройка.
+      <span class="tw">7 параметров
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </span>
+    </summary>
+    <div class="acc-b">
+      <div class="acc-grid">
+        <div>
+          <div class="seg" role="group" aria-label="Режим">
+            <button class="on" type="button" onclick="md(this,'city')">По городу</button>
+            <button type="button" onclick="md(this,'radius')">В радиусе от адреса<span class="nw">NEW</span></button>
+          </div>
+          <div class="rad" id="rad">
+            <input class="inp" type="text" placeholder="Адрес: ул. Ленина, 12" aria-label="Адрес центра">
+            <input type="range" min="0.5" max="10" step="0.5" value="3" oninput="this.nextElementSibling.textContent=this.value+' км'" aria-label="Радиус">
+            <span class="val">3 км</span>
+          </div>
+          <div class="fl"><label for="mn">Ещё ниши — через запятую</label><input class="inp" id="mn" placeholder="стоматология, имплантация"></div>
+          <div class="fl" style="margin-top:15px"><label for="mc">Ещё города</label><input class="inp" id="mc" placeholder="Москва, Балашиха, Мытищи"></div>
+        </div>
+        <div class="fl">
+          <label>Слова в отзывах</label>
+          <div class="wtg"><button class="on" type="button" onclick="wm(this)">Содержит</button><button type="button" onclick="wm(this)">Не содержит</button></div>
+          <input class="inp" type="text" placeholder="не дозвонился, не перезвонили" aria-label="Слова в отзывах">
+        </div>
+      </div>
+      <p class="tip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16.5v.01"/></svg>
+        <span><b>Фильтры по рейтингу, обороту, ЛПР и сайту</b> — на странице результатов: применяются к найденным компаниям сразу, без нового поиска.</span>
+      </p>
+    </div>
+  </details>
+</main>
+
+<footer class="foot">
+  <span><b>Прототип</b> · premium · 1/6</span>
+  <a href="02-rezultaty-poiska.html">Результаты →</a>
+  <a href="03-poisk-po-boli.html">По боли →</a>
+  <a href="../index.html">Все 6 дизайнов</a>
+</footer>
+
+<script>
+function sv(b){document.getElementById('niche').value=b.textContent}
+function tg(b){b.classList.toggle('on')}
+function wm(b){b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+function md(btn,m){btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.getElementById('rad').classList.toggle('show',m==='radius')}
+</script>
+</body>
+</html>

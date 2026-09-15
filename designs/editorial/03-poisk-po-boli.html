@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Поиск по боли · editorial · SpinLid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500;1,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFFFF; --tint:#F1F1F1; --tint-2:#F7F7F7;
+  --ink:#111111; --ink-2:#444444; --ink-3:#8A8A8A;
+  --rule:#111111; --hair:#DDDDDD; --blue:#0F62FE;
+  --good:#16A34A; --warn:#D97706; --bad:#DC2626;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:var(--blue);color:#fff}
+body{font-family:'IBM Plex Sans','Segoe UI',sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.mono{font-family:'Ubuntu Mono',monospace;font-variant-numeric:tabular-nums;font-size:.95em}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+.mast{border-top:3px solid var(--ink);border-bottom:1px solid var(--rule);position:sticky;top:0;background:#fff;z-index:30}
+.mast-in{display:flex;align-items:center;gap:24px;height:56px}
+.brand{font-family:'Playfair Display',serif;font-weight:900;font-size:21px}
+.brand i{font-style:italic;color:var(--blue)}
+.mast nav{display:flex;gap:20px;font-size:13px;font-weight:600}
+.mast nav a{color:var(--ink-2);padding:4px 0;border-bottom:2px solid transparent}
+.mast nav a:hover{color:var(--ink)}
+.mast nav a[aria-current]{color:var(--ink);border-bottom-color:var(--blue)}
+.mast .ed{margin-left:auto;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+main{padding:52px 0 110px}
+
+/* лид */
+.lead{display:grid;grid-template-columns:1.5fr 1fr;gap:48px;align-items:start}
+@media(max-width:880px){.lead{grid-template-columns:1fr}}
+.kicker{font-size:11.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.kicker::after{content:'';flex:1;border-top:1px solid var(--hair)}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(32px,4.4vw,48px);font-weight:900;line-height:1.08;letter-spacing:-.015em}
+h1 em{font-style:italic;font-weight:500;color:var(--ink-2)}
+.standfirst{margin-top:18px;font-size:16.5px;color:var(--ink-2);max-width:56ch}
+.standfirst b{color:var(--ink);font-weight:600}
+
+/* где искать — правая колонка */
+.where{border-top:3px solid var(--ink);padding-top:14px}
+.where h2{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;font-style:italic;margin-bottom:16px}
+.fl{margin-bottom:18px}
+.fl label{display:block;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-bottom:7px}
+.inp{width:100%;background:#fff;border:none;border-bottom:2px solid var(--ink);padding:8px 2px;font-size:16px;font-weight:500;font-family:'Playfair Display',serif}
+.inp::placeholder{color:var(--ink-3);font-weight:400;font-style:italic}
+.inp:focus{outline:none;border-bottom-color:var(--blue)}
+.note{font-size:12px;color:var(--ink-3);margin-top:6px}
+.segchips{display:flex;flex-wrap:wrap;gap:7px}
+.segchips button{font-size:12.5px;color:var(--ink-2);border:1px solid var(--hair);border-radius:99px;padding:5px 13px;background:#fff}
+.segchips button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn-go{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;background:var(--blue);color:#fff;font-size:14px;font-weight:600;letter-spacing:.04em;padding:14px 22px;border-radius:3px;transition:.12s;margin-top:6px;min-height:48px}
+.btn-go:hover{background:#004ACC}
+.cta-m{font-size:12px;color:var(--ink-3);text-align:center;margin-top:10px}
+
+/* список болей — «оглавление» */
+.toc{margin-top:56px;border-top:3px solid var(--ink);padding-top:10px}
+.toc-h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.toc-h h2{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;font-style:italic}
+.toc-h span{font-size:12.5px;color:var(--ink-3);margin-left:auto}
+.trow{display:grid;grid-template-columns:26px 1fr 90px 64px;gap:16px;align-items:center;width:100%;text-align:left;padding:13px 2px;border-bottom:1px solid var(--hair);transition:.1s;min-height:48px}
+.trow:hover{background:var(--tint-2)}
+.trow.on{background:#F0F5FF}
+.trow .ord{font-family:'Ubuntu Mono',monospace;font-size:11px;color:var(--ink-3);font-weight:700}
+.trow.on .ord{color:var(--blue)}
+.trow .tt{font-family:'Playfair Display',serif;font-size:17px;font-weight:700}
+.trow.on .tt{color:var(--blue)}
+.trow .track{height:6px;background:var(--tint);position:relative}
+.trow .fill{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
+.trow.on .fill{background:var(--blue)}
+.trow .cnt{font-family:'Ubuntu Mono',monospace;font-size:13px;font-weight:700;text-align:right}
+.trow .cnt small{display:block;font-family:'IBM Plex Sans';font-size:10.5px;color:var(--ink-3);font-weight:400}
+@media(max-width:640px){.trow{grid-template-columns:22px 1fr 64px}.trow .track{display:none}}
+.tmore{width:100%;padding:13px 2px;font-size:13.5px;color:var(--blue);font-weight:600;text-align:left}
+.mlist{display:none}
+.mlist.show{display:block}
+
+/* свой вариант */
+.own{display:flex;gap:14px;align-items:end;margin-top:22px;padding-top:18px;border-top:1px solid var(--hair);flex-wrap:wrap}
+.own .fl{flex:1;min-width:240px;margin:0}
+.ofound{display:none;font-size:13.5px;color:var(--ink-2);padding-bottom:9px}
+.ofound.show{display:block}
+.ofound b{color:var(--blue)}
+
+/* результаты */
+.res-head{display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap;margin-top:60px;border-top:3px solid var(--ink);padding-top:16px}
+.res-n{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;line-height:1;letter-spacing:-.02em}
+.res-t{font-size:15px;color:var(--ink-2)}
+.res-t b{color:var(--ink);font-weight:700}
+.res-sub{font-size:12.5px;color:var(--ink-3);margin-top:4px}
+.res-sub .mono{font-weight:700;color:var(--ink-2)}
+.res-act{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.res-act label{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:var(--ink-2);min-height:42px}
+.res-act input{width:15px;height:15px;accent-color:#0F62FE}
+.abtn{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;border:1px solid var(--ink);border-radius:3px;padding:9px 15px;background:#fff;transition:.12s;min-height:40px}
+.abtn:hover{background:var(--tint)}
+.ic{width:12px;height:12px}
+
+.entries{margin-top:6px}
+.entry{display:grid;grid-template-columns:1fr auto;gap:20px;padding:22px 2px;border-bottom:1px solid var(--hair);transition:.1s}
+.entry:hover{background:var(--tint-2)}
+.e-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.e-n{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.e-sub{font-size:12.5px;color:var(--ink-3)}
+.pains{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.pt{font-size:12px;font-weight:600;color:var(--blue);border:1px solid #B3D0FF;background:#F0F5FF;border-radius:99px;padding:2px 11px}
+.pt .n{font-family:'Ubuntu Mono',monospace;color:var(--ink-3);font-weight:400}
+.quote{margin-top:11px;position:relative;padding-left:20px;font-size:15px;line-height:1.6;color:var(--ink-2);font-family:'Playfair Display',serif;font-style:italic;max-width:64ch}
+.quote::before{content:'«';position:absolute;left:0;top:-6px;font-size:30px;color:var(--blue);font-style:normal;font-weight:700}
+.quote::after{content:'»';color:var(--blue);font-style:normal;font-weight:700}
+.e-meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:11px;font-size:12px;color:var(--ink-2);align-items:center}
+.e-meta .sep{color:var(--hair)}
+.fm{font-weight:600}
+.fm.bad{color:var(--bad)}.fm.mut{color:var(--ink-3)}
+.e-side{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0;text-align:right;padding-top:4px}
+.tv{font-family:'Ubuntu Mono',monospace;font-size:22px;font-weight:700}
+.tv.hot{color:var(--bad)}.tv.warm{color:var(--warn)}
+.tl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.e-ph{font-family:'Ubuntu Mono',monospace;font-size:13.5px;font-weight:700;white-space:nowrap}
+.e-acts{display:flex;gap:8px;margin-top:6px}
+.mini{font-size:12px;font-weight:600;border:1px solid var(--ink);border-radius:3px;padding:7px 13px;background:#fff;transition:.12s;min-height:36px}
+.mini:hover{background:var(--tint)}
+.mini.solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+.mini.solid:hover{background:var(--blue);border-color:var(--blue)}
+.pager{display:flex;align-items:center;justify-content:center;gap:20px;padding-top:16px;font-size:13.5px;color:var(--ink-2)}
+.pg{border:1px solid var(--ink);border-radius:3px;padding:9px 18px;font-weight:600}
+.pg:disabled{opacity:.35;cursor:default}
+.pager .mono{font-weight:700;color:var(--ink)}
+
+.foot{border-top:3px solid var(--ink);margin-top:70px}
+.foot .wrap{display:flex;gap:22px;padding-top:14px;padding-bottom:44px;font-size:12.5px;color:var(--ink-3);flex-wrap:wrap}
+.foot a{color:var(--ink-2);font-weight:600;border-bottom:1px solid var(--hair)}
+.foot a:hover{border-bottom-color:var(--blue);color:var(--blue)}
+.foot b{color:var(--ink)}
+@media(max-width:760px){.entry{grid-template-columns:1fr}.e-side{flex-direction:row;align-items:center;flex-wrap:wrap;text-align:left}.res-act{margin-left:0}}
+</style>
+</head>
+<body>
+
+<header class="mast"><div class="wrap mast-in">
+  <a class="brand" href="01-poisk-lidov.html">Spin<i>lid</i></a>
+  <nav aria-label="Разделы">
+    <a href="01-poisk-lidov.html">Поиск</a>
+    <a href="#" aria-current="page">По боли</a>
+    <a href="#">История</a>
+    <a href="#">Списки</a>
+  </nav>
+  <span class="ed">Дизайн 3/6 · Editorial</span>
+</div></header>
+
+<main><div class="wrap">
+  <section class="lead">
+    <article>
+      <p class="kicker">Рубрика: поиск по боли</p>
+      <h1>Кто уже жалуется — <em>найдите по отзывам их клиентов</em></h1>
+      <p class="standfirst">Выберите частую жалобу — покажем компании, где она встречается в реальных отзывах, с <b>цитатой и контактом</b>. Самый сильный повод для первого письма.</p>
+    </article>
+
+    <aside class="where" aria-label="Где искать">
+      <h2>Где искать</h2>
+      <div class="fl"><label for="c3">Город</label><input class="inp" id="c3" list="c" value="Москва"><datalist id="c"><option value="Москва"><option value="Санкт-Петербург"><option value="Казань"></datalist></div>
+      <div class="fl"><label for="n3">Ниша</label><input class="inp" id="n3" list="n" value="Стоматология"><datalist id="n"><option value="Стоматология"><option value="Автосервис"><option value="Ресторан"></datalist>
+        <p class="note">Оставьте пустым — покажем по всем нишам города</p></div>
+      <div class="fl"><label>Источник отзывов</label>
+        <div class="segchips"><button class="on" onclick="sg(this)">Все</button><button onclick="sg(this)">Яндекс.Карты</button><button onclick="sg(this)">2GIS</button><button onclick="sg(this)">Google</button></div></div>
+      <button class="btn-go" onclick="document.getElementById('res').scrollIntoView({behavior:'smooth'})">Показать компании →</button>
+      <p class="cta-m">по уже собранной базе — результат сразу</p>
+    </aside>
+  </section>
+
+  <section class="toc" aria-label="Выбор боли">
+    <div class="toc-h"><h2>На что жалуются</h2><span>Стоматология · Москва · 628 негативных отзывов · размер полосы — частота жалобы</span></div>
+    <div id="toc">
+      <button class="trow on" type="button" onclick="tr(this)"><span class="ord">01</span><span class="tt">Не могут дозвониться</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="cnt">142<small>отзыва</small></span></button>
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">02</span><span class="tt">Долго ждать приёма</span><span class="track"><span class="fill" style="width:69%"></span></span><span class="cnt">98<small>отзывов</small></span></button>
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">03</span><span class="tt">Непонятные цены</span><span class="track"><span class="fill" style="width:54%"></span></span><span class="cnt">76<small>отзывов</small></span></button>
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">04</span><span class="tt">Грубость персонала</span><span class="track"><span class="fill" style="width:47%"></span></span><span class="cnt">67<small>отзывов</small></span></button>
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">05</span><span class="tt">Потерянная заявка</span><span class="track"><span class="fill" style="width:38%"></span></span><span class="cnt">54<small>отзыва</small></span></button>
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">06</span><span class="tt">Очередь, несмотря на запись</span><span class="track"><span class="fill" style="width:32%"></span></span><span class="cnt">45<small>отзывов</small></span></button>
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">07</span><span class="tt">Сорванные сроки</span><span class="track"><span class="fill" style="width:27%"></span></span><span class="cnt">39<small>отзывов</small></span></button>
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">08</span><span class="tt">Грязь и неубрано</span><span class="track"><span class="fill" style="width:20%"></span></span><span class="cnt">28<small>отзывов</small></span></button>
+    </div>
+    <div class="mlist" id="ml">
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">09</span><span class="tt">Навязывают доп. услуги</span><span class="track"><span class="fill" style="width:15%"></span></span><span class="cnt">21<small>отзыв</small></span></button>
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">10</span><span class="tt">Нет парковки</span><span class="track"><span class="fill" style="width:13%"></span></span><span class="cnt">18<small>отзывов</small></span></button>
+      <button class="trow" type="button" onclick="tr(this)"><span class="ord">11</span><span class="tt">Отказ возвращать деньги</span><span class="track"><span class="fill" style="width:11%"></span></span><span class="cnt">16<small>отзывов</small></span></button>
+    </div>
+    <button class="tmore" type="button" onclick="document.getElementById('ml').classList.toggle('show');this.textContent=this.textContent.includes('Показать')?'Скрыть':'Показать ещё 14 болей этой ниши'">Показать ещё 14 болей этой ниши</button>
+
+    <div class="own">
+      <div class="fl"><label for="own">Или впишите своё — найдём подходящий тег</label>
+        <input class="inp" id="own" placeholder="например: «не перезвонили»" oninput="document.getElementById('of').classList.toggle('show',this.value.trim().length>2)"></div>
+      <p class="ofound" id="of">Найден тег: <b>«Не перезванивают»</b> · 31 совпадение в отзывах</p>
+    </div>
+  </section>
+
+  <section id="res" aria-label="Результаты">
+    <div class="res-head">
+      <div>
+        <div class="res-n">34</div>
+        <p class="res-t">компании с жалобами на <b>«Не могут дозвониться»</b></p>
+        <p class="res-sub"><span class="mono">21</span> без сайта · <span class="mono">17</span> с оборотом от 1 млн ₽ · <span class="mono">142</span> отзыва с этой болью</p>
+      </div>
+      <div class="res-act">
+        <label><input type="checkbox" onchange="document.querySelectorAll('.entry input').forEach(c=>c.checked=this.checked)"> Выбрать всех</label>
+        <button class="abtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16"/></svg>Excel</button>
+        <button class="abtn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 3L11 14M22 3l-7 19-4-8-8-4 19-7z"/></svg>Написать</button>
+        <button class="abtn">＋ В список</button>
+      </div>
+    </div>
+
+    <div class="entries">
+      <article class="entry">
+        <div>
+          <div class="e-h"><a class="e-n" href="#">Стоматология «Улыбка+»</a><span class="e-sub">Москва, ул. Ленина 12 · ★ 3.8 · 142 отзыва</span></div>
+          <div class="pains"><span class="pt">Не могут дозвониться <span class="n">×12</span></span><span class="pt">Не перезванивают <span class="n">×5</span></span></div>
+          <p class="quote">Оставила заявку через сайт три дня назад — ни звонка, ни SMS. Записалась в другую клинику.</p>
+          <div class="e-meta"><span class="fm bad">31 негатив</span><span class="sep">·</span><span class="fm mut">нет сайта</span><span class="sep">·</span><span class="fm mut">ООО · 5 лет</span></div>
+        </div>
+        <div class="e-side">
+          <span class="tv hot">78</span><span class="tl">готовность</span>
+          <span class="e-ph">+7 495 123-45-67</span>
+          <div class="e-acts"><button class="mini solid">Написать под боль</button><button class="mini">Отзывы · 12</button></div>
+        </div>
+      </article>
+      <article class="entry">
+        <div>
+          <div class="e-h"><a class="e-n" href="#">Стоматология «Ортодонт-Про»</a><span class="e-sub">Балашиха, Советская 30 · ★ 3.9 · 118 отзывов</span></div>
+          <div class="pains"><span class="pt">Не могут дозвониться <span class="n">×11</span></span><span class="pt">Потерянная заявка <span class="n">×4</span></span></div>
+          <p class="quote">Трижды оставлял заявку на консультацию — ни разу не перезвонили.</p>
+          <div class="e-meta"><span class="fm bad">27 негатива</span><span class="sep">·</span><span class="fm mut">нет сайта</span><span class="sep">·</span><span class="fm mut">ООО · 3 года</span></div>
+        </div>
+        <div class="e-side">
+          <span class="tv hot">74</span><span class="tl">готовность</span>
+          <span class="e-ph">+7 495 340-11-22</span>
+          <div class="e-acts"><button class="mini solid">Написать под боль</button><button class="mini">Отзывы · 11</button></div>
+        </div>
+      </article>
+      <article class="entry">
+        <div>
+          <div class="e-h"><a class="e-n" href="#">Клиника «Здоровье»</a><span class="e-sub">Москва, Волгоградский 42 · ★ 4.1 · 89 отзывов</span></div>
+          <div class="pains"><span class="pt">Не могут дозвониться <span class="n">×8</span></span><span class="pt">Долгая запись <span class="n">×4</span></span></div>
+          <p class="quote">Неделю пытаюсь записаться к врачу: телефон занято с 9 до 18, онлайн-записи нет.</p>
+          <div class="e-meta"><span class="fm bad">19 негатива</span><span class="sep">·</span><span class="fm mut">zdorovie-msk.ru</span><span class="sep">·</span><span class="fm mut">ООО · 12 лет</span></div>
+        </div>
+        <div class="e-side">
+          <span class="tv warm">58</span><span class="tl">готовность</span>
+          <span class="e-ph">+7 495 555-12-33</span>
+          <div class="e-acts"><button class="mini solid">Написать под боль</button><button class="mini">Отзывы · 8</button></div>
+        </div>
+      </article>
+      <article class="entry">
+        <div>
+          <div class="e-h"><a class="e-n" href="#">Детская клиника «Радуга»</a><span class="e-sub">Москва, ул. Академика 8 · ★ 4.3 · 156 отзывов</span></div>
+          <div class="pains"><span class="pt">Не могут дозвониться <span class="n">×6</span></span></div>
+          <p class="quote">Единственный телефон вечно занят. С болеющим ребёнком — это катастрофа.</p>
+          <div class="e-meta"><span class="fm bad">14 негатива</span><span class="sep">·</span><span class="fm mut">raduga-kids.ru</span><span class="sep">·</span><span class="fm mut">ООО · 6 лет</span></div>
+        </div>
+        <div class="e-side">
+          <span class="tv warm">49</span><span class="tl">готовность</span>
+          <span class="e-ph">+7 495 200-30-40</span>
+          <div class="e-acts"><button class="mini solid">Написать под боль</button><button class="mini">Отзывы · 6</button></div>
+        </div>
+      </article>
+    </div>
+
+    <div class="pager">
+      <button class="pg" disabled>← Назад</button>
+      <span><span class="mono">1–34</span> из <span class="mono">34</span></span>
+      <button class="pg" disabled>Дальше →</button>
+    </div>
+  </section>
+</div></main>
+
+<footer class="foot"><div class="wrap">
+  <span><b>Прототип</b> · editorial · 3/6</span>
+  <a href="01-poisk-lidov.html">← Поиск</a>
+  <a href="02-rezultaty-poiska.html">Результаты →</a>
+  <a href="../index.html">Все 6 дизайнов</a>
+</div></footer>
+
+<script>
+function tr(b){b.classList.toggle('on')}
+function sg(b){b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+</script>
+</body>
+</html>

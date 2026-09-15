@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpinLid · 6 дизайн-систем — сравнение</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4EBDA; --cell:#FFFBF2; --ink:#1C1917; --ink-2:#57534E; --ink-3:#8A8177;
+  --line:#E7DCC8; --line-2:#D8CBB2; --peach:#FAD4C0; --peach-2:#F0B590; --accent:#C2410C;
+  --sh:0 1px 2px rgba(74,52,18,.06), 0 10px 28px -18px rgba(74,52,18,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Golos Text',sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 420px at 82% -8%, rgba(250,212,192,.5), transparent 62%)}
+a{color:inherit;text-decoration:none}
+main{max-width:1100px;margin:0 auto;padding:56px 24px 90px}
+.kicker{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.kicker::after{content:'';flex:1;max-width:64px;border-top:1px solid var(--peach-2)}
+h1{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-.028em;line-height:1.1}
+h1 .dim{color:var(--ink-3);font-weight:700}
+.sub{margin-top:14px;color:var(--ink-2);max-width:64ch}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{background:var(--cell);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh);overflow:hidden;transition:.15s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-2px);box-shadow:0 1px 2px rgba(74,52,18,.06),0 16px 36px -18px rgba(74,52,18,.3)}
+.swatch{height:88px;display:flex;align-items:flex-end;padding:14px 18px;gap:6px}
+.swatch span{width:26px;height:26px;border-radius:8px;border:1px solid rgba(0,0,0,.12)}
+.card-b{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3);letter-spacing:.1em}
+.card h2{font-size:18px;font-weight:800;letter-spacing:-.015em}
+.card .desc{font-size:13px;color:var(--ink-2);flex:1}
+.meta{font-size:12px;color:var(--ink-3)}
+.pages{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pages a{font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:99px;border:1.5px solid var(--line-2);transition:.12s}
+.pages a:hover{background:var(--ink);color:var(--cell);border-color:var(--ink)}
+.pages a.main{background:linear-gradient(135deg,#FBD9C6,#F6C29E);border-color:#EDBE9B;color:#3B1E0C}
+.note{margin-top:26px;font-size:13px;color:var(--ink-2);background:var(--cell);border:1px dashed var(--line-2);border-radius:14px;padding:14px 18px}
+.note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">SpinLid · пересборка UI</p>
+  <h1>6 дизайн-систем — <span class="dim">один и тот же продукт</span></h1>
+  <p class="sub">Три страницы («Поиск лидов», «Результаты», «Поиск по боли») в шести независимых визуальных системах. Все — автономные HTML, вся функциональность (фильтры, сценарии, bulk-действия) сохранена в каждой.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="swatch" style="background:#F4EBDA">
+        <span style="background:#FFFBF2"></span><span style="background:#FAD4C0"></span><span style="background:#F0B590"></span><span style="background:#C2410C"></span>
+      </div>
+      <div class="card-b">
+        <span class="num">01 · TYPEUI/BENTO</span>
+        <h2>Bento — тёплый</h2>
+        <p class="desc">Кремово-персиковая система по скиллу Bento с TypeUI: асимметричная сетка-бенто, один акцент, hairline-строки, Golos Text + моно-цифры. Утверждённый эталон.</p>
+        <p class="meta">Golos Text · JetBrains Mono · светлая тёплая</p>
+        <div class="pages">
+          <a class="main" href="01-poisk-lidov.html">Вход поиска</a>
+          <a href="02-rezultaty-poiska.html">Результаты</a>
+          <a href="03-poisk-po-boli.html">По боли</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="swatch" style="background:#FAFAFA">
+        <span style="background:#FFFFFF"></span><span style="background:#F4F4F5"></span><span style="background:#E4E4E7"></span><span style="background:#18181B"></span>
+      </div>
+      <div class="card-b">
+        <span class="num">02 · TYPEUI/SHADCN</span>
+        <h2>Shadcn — нейтральный</h2>
+        <p class="desc">Цинковые нейтрали, чёрная primary-кнопка, ноль теней, ring-фокусы. Результаты — настоящая data-таблица. Максимально близко к вашему текущему стеку: перенос в Next.js почти прямой.</p>
+        <p class="meta">Inter Tight · Fira Code · светлая нейтральная</p>
+        <div class="pages">
+          <a class="main" href="designs/shadcn/01-poisk-lidov.html">Вход поиска</a>
+          <a href="designs/shadcn/02-rezultaty-poiska.html">Результаты</a>
+          <a href="designs/shadcn/03-poisk-po-boli.html">По боли</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="swatch" style="background:#FBFBF9">
+        <span style="background:#FDC800"></span><span style="background:#432DD7"></span><span style="background:#F279A8"></span><span style="background:#9FE3B8"></span>
+      </div>
+      <div class="card-b">
+        <span class="num">03 · TYPEUI/NEOBRUTALISM</span>
+        <h2>Neobrutalism — громкий</h2>
+        <p class="desc">Рамки 2px, жёсткие тени 4px, жёлтый + фиолетовый на тёплой бумаге, стикеры с наклоном. Максимально запоминающийся — для выделения среди конкурентов.</p>
+        <p class="meta">Montserrat · JetBrains Mono · светлая яркая</p>
+        <div class="pages">
+          <a class="main" href="designs/neobrutalism/01-poisk-lidov.html">Вход поиска</a>
+          <a href="designs/neobrutalism/02-rezultaty-poiska.html">Результаты</a>
+          <a href="designs/neobrutalism/03-poisk-po-boli.html">По боли</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="swatch" style="background:#FFFFFF">
+        <span style="background:#111111"></span><span style="background:#F1F1F1"></span><span style="background:#DDDDDD"></span><span style="background:#0F62FE"></span>
+      </div>
+      <div class="card-b">
+        <span class="num">04 · TYPEUI/EDITORIAL</span>
+        <h2>Editorial — журнальный</h2>
+        <p class="desc">Газетная вёрстка: Playfair Display, волосяные линейки, синий акцент IBM, цитаты-выносы с «ёлочками». Идеален под цитаты из отзывов — главную ценность продукта.</p>
+        <p class="meta">Playfair Display · IBM Plex Sans · Ubuntu Mono · белая</p>
+        <div class="pages">
+          <a class="main" href="designs/editorial/01-poisk-lidov.html">Вход поиска</a>
+          <a href="designs/editorial/02-rezultaty-poiska.html">Результаты</a>
+          <a href="designs/editorial/03-poisk-po-boli.html">По боли</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="swatch" style="background:#09090B">
+        <span style="background:#101014"></span><span style="background:#1F1F27"></span><span style="background:#0C5CAB"></span><span style="background:#4D9FFF"></span>
+      </div>
+      <div class="card-b">
+        <span class="num">05 · TYPEUI/ENTERPRISE</span>
+        <h2>Enterprise — облачная платформа</h2>
+        <p class="desc">Тёмный дашборд в духе Vercel/Heroku: стеклянные панели, IBM Plex, плотная таблица, свитчи, SSE-прогресс. Заточен под пауэр-юзеров и большие выдачи.</p>
+        <p class="meta">IBM Plex Sans · IBM Plex Mono · тёмная</p>
+        <div class="pages">
+          <a class="main" href="designs/enterprise/01-poisk-lidov.html">Вход поиска</a>
+          <a href="designs/enterprise/02-rezultaty-poiska.html">Результаты</a>
+          <a href="designs/enterprise/03-poisk-po-boli.html">По боли</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="swatch" style="background:#F5F5F7">
+        <span style="background:#FFFFFF"></span><span style="background:#E8E8ED"></span><span style="background:#3B82F6"></span><span style="background:#1D1D1F"></span>
+      </div>
+      <div class="card-b">
+        <span class="num">06 · TYPEUI/PREMIUM</span>
+        <h2>Premium — Apple-полировка</h2>
+        <p class="desc">Белый + один синий акцент, пилюли, мягкие рассеянные тени, системная типографика SF, заголовки с точкой. Спокойный «дорогой» SaaS.</p>
+        <p class="meta">system (SF) · JetBrains Mono · светлая спокойная</p>
+        <div class="pages">
+          <a class="main" href="designs/premium/01-poisk-lidov.html">Вход поиска</a>
+          <a href="designs/premium/02-rezultaty-poiska.html">Результаты</a>
+          <a href="designs/premium/03-poisk-po-boli.html">По боли</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note"><b>Как выбрать:</b> откройте «Результаты» в каждой системе — это самая плотная страница и лучший тест. Скиллы взяты из открытого реестра <b>bergside/awesome-design-skills</b> (TypeUI, MIT) с точным следованием палитрам и типографике каждого скилла.</p>
+</main>
+</body>
+</html>
